@@ -1,96 +1,423 @@
-♦️ Sahil's Budget & Expense Tracker
-Professional Financial Dashboard | Track, Analyze, Succeed
-Track income, expenses, and manage your budget with ease
-Currency:  USD ($) CAD (C$) 
-Select Month:  January February March April May June July August September October November December 
-Year:  2025 2026 
-💵 Income & Cash Flow Overview
-Set your monthly income and view your financial status
-Monthly Income
-Save Income
-$0.00
-Total Expenses
-$0.00
-Net Cash Flow
-$0.00
-Budget Status
-0%
-of budget used
-💰 Income Breakdown
-Track all your income sources
-👤 1:1 Clients
-Delete
-+ Add More
-Total from 1:1 Clients: $0.00
-👥 Group Clients
-Delete
-+ Add More
-Total from Group Clients: $0.00
-📈 Investment Income
-Investment Income: $0.00
-💵 Other Income
-Other Income: $0.00
-Total Monthly Income: $0.00
-💰 Budget Setup
-Set your monthly budget limits for each category
-🍔 Food
-🚗 Transportation
-🎬 Entertainment
-🛍️ Shopping
-💡 Bills
-💼 Business Expenses
-🏋️ Gym
-✈️ Travel
-🎓 Shayna Day Care Fee
-📦 Other
-Total Monthly Budget: $0.00
-Save Budget
-✓ Budget saved successfully!
-📝 Expense Log
-Add your expenses here
-Date 
-Amount
-Category  Select category 🍔 Food 🚗 Transportation 🎬 Entertainment 🛍️ Shopping 💡 Bills 💼 Business Expenses 🏋️ Gym ✈️ Travel 🎓 Shayna Day Care Fee 📦 Other 
-Description (Optional) 
-Add Expense Clear Form
-📥 Export Expenses (CSV) Clear This Month
-Recent Expenses
-No expenses logged yet. Add your first expense above!
-📊 Dashboard
-Your financial overview
-💰
-Total Cash Inflow
-$0.00
-💸
-Total Cash Outflow
-$0.00
-💵
-Total Spent
-$0.00
-💰
-Remaining Budget
-$0.00
-✓
-Budget Status
-Not Set
-0%
-Category Breakdown
-Category
-Budget
-Spent
-Remaining
-Status
-Set your budget to see breakdown
 
-Category Progress
-Set your budget to see progress
-📈 Visualizations
-Visual breakdown of your spending
-Expense Distribution
-How your expenses are distributed across categories
-Budget vs Actual
-Comparison of budgeted vs actual spending
-💾 Export & Backup
-Download your financial data
-📊 Export Monthly Report (CSV) 💾 Download Complete Backup (JSON) 🗑️ Clear All Data
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sahil's Budget & Expense Tracker</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-container">
+<!-- Header -->
+<header class="app-header">
+<div class="header-content">
+<h1>♦️ Sahil's Budget & Expense Tracker</h1>
+<p class="header-tagline">Professional Financial Dashboard | Track, Analyze, Succeed</p>
+</div>
+<p class="subtitle">Track income, expenses, and manage your budget with ease</p>
+</header>
 
+<!-- Controls Section -->
+<section class="section controls-section">
+<div class="controls-grid">
+<div class="control-item">
+<label for="currency-select">Currency:</label>
+<select id="currency-select" class="form-control">
+<option value="USD">USD ($)</option>
+<option value="CAD">CAD (C$)</option>
+</select>
+</div>
+<div class="control-item">
+<label for="month-select">Select Month:</label>
+<select id="month-select" class="form-control month-select-dropdown">
+<option value="0">January</option>
+<option value="1">February</option>
+<option value="2">March</option>
+<option value="3">April</option>
+<option value="4">May</option>
+<option value="5">June</option>
+<option value="6">July</option>
+<option value="7">August</option>
+<option value="8">September</option>
+<option value="9">October</option>
+<option value="10">November</option>
+<option value="11">December</option>
+</select>
+</div>
+<div class="control-item">
+<label for="year-select">Year:</label>
+<select id="year-select" class="form-control">
+<option value="2025">2025</option>
+<option value="2026">2026</option>
+</select>
+</div>
+</div>
+</section>
+
+<!-- Alerts Container -->
+<div id="alerts-container" class="alerts-container"></div>
+
+<!-- Income & Cash Flow Overview -->
+<section class="section income-overview">
+<div class="section-header">
+<h2>💵 Income & Cash Flow Overview</h2>
+<p class="section-description">Set your monthly income and view your financial status</p>
+</div>
+<div class="overview-grid">
+<div class="overview-card income-card">
+<div class="card-header">Monthly Income</div>
+<div class="currency-input-wrapper">
+<input type="number" id="monthly-income" class="currency-input" min="0" step="0.01" placeholder="Enter monthly income">
+</div>
+<button class="btn btn-primary btn-sm" id="save-income-btn">Save Income</button>
+<div class="income-display" id="income-display">$0.00</div>
+</div>
+<div class="overview-card expenses-card">
+<div class="card-header">Total Expenses</div>
+<div class="card-value-large" id="overview-total-expenses">$0.00</div>
+</div>
+<div class="overview-card cashflow-card" id="cashflow-card">
+<div class="card-header">Net Cash Flow</div>
+<div class="card-value-large" id="net-cashflow">$0.00</div>
+<div class="cashflow-status" id="cashflow-status"></div>
+</div>
+<div class="overview-card budget-status-overview" id="budget-overview-card">
+<div class="card-header">Budget Status</div>
+<div class="card-value-large" id="budget-overview-percentage">0%</div>
+<div class="budget-status-text" id="budget-overview-text">of budget used</div>
+</div>
+</div>
+</section>
+
+<!-- Income Breakdown Section -->
+<section class="section income-breakdown">
+<div class="section-header">
+<h2>💰 Income Breakdown</h2>
+<p class="section-description">Track all your income sources</p>
+</div>
+
+<!-- 1:1 Clients -->
+<div class="income-category-block">
+<h3>👤 1:1 Clients</h3>
+<div class="income-slots" id="1v1-clients-slots">
+<div class="income-slot">
+<input type="text" placeholder="Client Name" class="income-client-name">
+<div class="currency-input-wrapper">
+<input type="number" placeholder="Amount" class="income-amount currency-input" min="0" step="0.01">
+</div>
+<button class="btn btn-sm btn-danger-outline delete-income-btn" onclick="deleteIncomeSlot(this, '1v1')">Delete</button>
+</div>
+</div>
+<button class="btn btn-secondary btn-sm add-income-btn" onclick="addIncomeSlot('1v1')">+ Add More</button>
+<div class="income-total">
+<span>Total from 1:1 Clients:</span>
+<span class="income-total-amount" id="total-1v1">$0.00</span>
+</div>
+</div>
+
+<!-- Group Clients -->
+<div class="income-category-block">
+<h3>👥 Group Clients</h3>
+<div class="income-slots" id="group-clients-slots">
+<div class="income-slot">
+<input type="text" placeholder="Client Name" class="income-client-name">
+<div class="currency-input-wrapper">
+<input type="number" placeholder="Amount" class="income-amount currency-input" min="0" step="0.01">
+</div>
+<button class="btn btn-sm btn-danger-outline delete-income-btn" onclick="deleteIncomeSlot(this, 'group')">Delete</button>
+</div>
+</div>
+<button class="btn btn-secondary btn-sm add-income-btn" onclick="addIncomeSlot('group')">+ Add More</button>
+<div class="income-total">
+<span>Total from Group Clients:</span>
+<span class="income-total-amount" id="total-group">$0.00</span>
+</div>
+</div>
+
+<!-- Investment Income -->
+<div class="income-category-block">
+<h3>📈 Investment Income</h3>
+<div class="currency-input-wrapper">
+<input type="number" id="investment-income" placeholder="Enter amount" class="currency-input" min="0" step="0.01">
+</div>
+<div class="income-total">
+<span>Investment Income:</span>
+<span class="income-total-amount" id="total-investment">$0.00</span>
+</div>
+</div>
+
+<!-- Other Income -->
+<div class="income-category-block">
+<h3>💵 Other Income</h3>
+<div class="currency-input-wrapper">
+<input type="number" id="other-income" placeholder="Enter amount" class="currency-input" min="0" step="0.01">
+</div>
+<div class="income-total">
+<span>Other Income:</span>
+<span class="income-total-amount" id="total-other">$0.00</span>
+</div>
+</div>
+
+<!-- Grand Total Income -->
+<div class="grand-total-income">
+<span>Total Monthly Income:</span>
+<span class="total-amount" id="grand-total-income">$0.00</span>
+</div>
+</section>
+
+<!-- Budget Setup Section -->
+<section class="section budget-setup">
+<div class="section-header">
+<h2>💰 Budget Setup</h2>
+<p class="section-description">Set your monthly budget limits for each category</p>
+</div>
+<div class="budget-grid">
+<div class="budget-item">
+<label for="budget-food">🍔 Food</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-food" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-transportation">🚗 Transportation</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-transportation" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-entertainment">🎬 Entertainment</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-entertainment" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-shopping">🛍️ Shopping</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-shopping" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-bills">💡 Bills</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-bills" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-business">💼 Business Expenses</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-business" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-gym">🏋️ Gym</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-gym" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-travel">✈️ Travel</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-travel" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-daycare">🎓 Shayna Day Care Fee</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-daycare" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<div class="budget-item">
+<label for="budget-other">📦 Other</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-other" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+</div>
+<div class="budget-total">
+<span>Total Monthly Budget:</span>
+<span class="total-amount" id="total-budget">$0.00</span>
+</div>
+<button class="btn btn-primary" id="save-budget-btn">Save Budget</button>
+<div class="success-message" id="budget-success-msg">✓ Budget saved successfully!</div>
+</section>
+
+<!-- Expense Log Section -->
+<section class="section expense-log">
+<div class="section-header">
+<h2>📝 Expense Log</h2>
+<p class="section-description">Add your expenses here</p>
+</div>
+<form id="expense-form" class="expense-form">
+<div class="form-row">
+<div class="form-group">
+<label for="expense-date">Date</label>
+<input type="date" id="expense-date" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="expense-amount">Amount</label>
+<div class="currency-input-wrapper">
+<input type="number" id="expense-amount" class="currency-input form-control" min="0.01" step="0.01" placeholder="Enter amount" required>
+</div>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="expense-category">Category</label>
+<select id="expense-category" class="form-control" required>
+<option value="">Select category</option>
+<option value="Food">🍔 Food</option>
+<option value="Transportation">🚗 Transportation</option>
+<option value="Entertainment">🎬 Entertainment</option>
+<option value="Shopping">🛍️ Shopping</option>
+<option value="Bills">💡 Bills</option>
+<option value="Business Expenses">💼 Business Expenses</option>
+<option value="Gym">🏋️ Gym</option>
+<option value="Travel">✈️ Travel</option>
+<option value="Shayna Day Care Fee">🎓 Shayna Day Care Fee</option>
+<option value="Other">📦 Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="expense-description">Description (Optional)</label>
+<input type="text" id="expense-description" class="form-control" placeholder="e.g., Grocery shopping">
+</div>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn btn-success">Add Expense</button>
+<button type="button" class="btn btn-secondary" id="clear-form-btn">Clear Form</button>
+</div>
+</form>
+<div class="expense-actions">
+<button class="btn btn-export" id="export-expenses-btn">📥 Export Expenses (CSV)</button>
+<button class="btn btn-danger-outline" id="clear-month-btn">Clear This Month</button>
+</div>
+<div class="recent-expenses">
+<h3>Recent Expenses</h3>
+<div id="expenses-list" class="expenses-list">
+<p class="empty-state">No expenses logged yet. Add your first expense above!</p>
+</div>
+</div>
+</section>
+
+<!-- Dashboard Section -->
+<section class="section dashboard">
+<div class="section-header">
+<h2>📊 Dashboard</h2>
+<p class="section-description">Your financial overview</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="summary-cards">
+<div class="summary-card inflow-card">
+<div class="card-icon">💰</div>
+<div class="card-content">
+<p class="card-label">Total Cash Inflow</p>
+<p class="card-value" id="total-inflow">$0.00</p>
+</div>
+</div>
+<div class="summary-card outflow-card">
+<div class="card-icon">💸</div>
+<div class="card-content">
+<p class="card-label">Total Cash Outflow</p>
+<p class="card-value" id="total-outflow">$0.00</p>
+</div>
+</div>
+<div class="summary-card">
+<div class="card-icon">💵</div>
+<div class="card-content">
+<p class="card-label">Total Spent</p>
+<p class="card-value" id="total-spent">$0.00</p>
+</div>
+</div>
+<div class="summary-card">
+<div class="card-icon">💰</div>
+<div class="card-content">
+<p class="card-label">Remaining Budget</p>
+<p class="card-value" id="remaining-budget">$0.00</p>
+</div>
+</div>
+<div class="summary-card status-card" id="budget-status-card">
+<div class="card-icon" id="status-icon">✓</div>
+<div class="card-content">
+<p class="card-label">Budget Status</p>
+<p class="card-value" id="budget-status">Not Set</p>
+<p class="card-percentage" id="budget-percentage">0%</p>
+</div>
+</div>
+</div>
+
+<!-- Category Breakdown Table -->
+<div class="category-breakdown">
+<h3>Category Breakdown</h3>
+<div class="table-wrapper">
+<table class="breakdown-table">
+<thead>
+<tr>
+<th>Category</th>
+<th>Budget</th>
+<th>Spent</th>
+<th>Remaining</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="breakdown-tbody">
+<tr>
+<td colspan="5" class="empty-state">Set your budget to see breakdown</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Progress Bars -->
+<div class="progress-section">
+<h3>Category Progress</h3>
+<div id="progress-bars" class="progress-bars">
+<p class="empty-state">Set your budget to see progress</p>
+</div>
+</div>
+</section>
+
+<!-- Charts Section -->
+<section class="section charts">
+<div class="section-header">
+<h2>📈 Visualizations</h2>
+<p class="section-description">Visual breakdown of your spending</p>
+</div>
+<div class="charts-grid">
+<div class="chart-container">
+<h3>Expense Distribution</h3>
+<div class="chart-wrapper">
+<canvas id="pie-chart"></canvas>
+</div>
+<p class="chart-caption">How your expenses are distributed across categories</p>
+</div>
+<div class="chart-container">
+<h3>Budget vs Actual</h3>
+<div class="chart-wrapper">
+<canvas id="bar-chart"></canvas>
+</div>
+<p class="chart-caption">Comparison of budgeted vs actual spending</p>
+</div>
+</div>
+</section>
+
+<!-- Export & Backup Section -->
+<section class="section export-section">
+<div class="section-header">
+<h2>💾 Export & Backup</h2>
+<p class="section-description">Download your financial data</p>
+</div>
+<div class="export-buttons">
+<button class="btn btn-export" id="export-report-btn">📊 Export Monthly Report (CSV)</button>
+<button class="btn btn-export" id="export-all-btn">💾 Download Complete Backup (JSON)</button>
+<button class="btn btn-danger" id="clear-all-btn">🗑️ Clear All Data</button>
+</div>
+</section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
