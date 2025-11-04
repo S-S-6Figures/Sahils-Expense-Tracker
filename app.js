@@ -32,11 +32,12 @@ function initializeApp() {
   document.getElementById('month-select').value = today.getMonth();
   appState.currentMonth = today.getMonth();
   
+  // Initialize budgets with 0 values (NO PRE-ENTRY)
   BUDGET_CATEGORIES.forEach(category => {
     appState.budgets[category] = 0;
   });
   
-  // Render empty client rows
+  // Render empty client rows (NO PRE-ENTRY)
   renderOneToOneClients();
   renderGroupClients();
 }
@@ -72,13 +73,10 @@ function setUpEventListeners() {
   document.getElementById('add-one-to-one-btn').addEventListener('click', addOneToOneRow);
   document.getElementById('add-group-btn').addEventListener('click', addGroupRow);
   
-  // Budget inputs - real-time calculation
-  BUDGET_CATEGORIES.forEach(category => {
-    const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-')}`;
-    const element = document.getElementById(inputId);
-    if (element) {
-      element.addEventListener('input', updateBudgetTotal);
-    }
+  // Budget inputs - REAL-TIME CALCULATION UPDATE (FIXED)
+  const budgetInputs = document.querySelectorAll('.budget-input');
+  budgetInputs.forEach(input => {
+    input.addEventListener('input', updateBudgetTotal);
   });
   
   document.getElementById('save-budget-btn').addEventListener('click', saveBudget);
@@ -167,11 +165,11 @@ function renderGroupClients() {
 
 // ==================== INCOME CALCULATIONS ====================
 function getOneToOneTotal() {
-  return appState.oneToOneClients.reduce((sum, client) => sum + (client.amount || 0), 0);
+  return appState.oneToOneClients.reduce((sum, client) => sum + (parseFloat(client.amount) || 0), 0);
 }
 
 function getGroupTotal() {
-  return appState.groupClients.reduce((sum, group) => sum + (group.amount || 0), 0);
+  return appState.groupClients.reduce((sum, group) => sum + (parseFloat(group.amount) || 0), 0);
 }
 
 function getInvestmentIncome() {
@@ -216,14 +214,22 @@ function saveIncome() {
 // ==================== BUDGET FUNCTIONS ====================
 function updateBudgetTotal() {
   let total = 0;
+  
+  // Read values directly from input elements
   BUDGET_CATEGORIES.forEach(category => {
     const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-')}`;
-    const value = parseFloat(document.getElementById(inputId).value) || 0;
-    appState.budgets[category] = value;
-    total += value;
+    const element = document.getElementById(inputId);
+    if (element) {
+      const value = parseFloat(element.value) || 0;
+      appState.budgets[category] = value;
+      total += value;
+    }
   });
   
+  // Update total budget display
   document.getElementById('total-budget').textContent = formatCurrency(total);
+  
+  // Update dashboard in real-time
   updateDashboard();
 }
 
@@ -235,6 +241,7 @@ function saveBudget() {
   setTimeout(() => {
     msg.classList.remove('show');
   }, 3000);
+  updateAllDisplays();
 }
 
 // ==================== EXPENSE FUNCTIONS ====================
@@ -391,7 +398,6 @@ function updateCharts() {
   const monthExpenses = getCurrentMonthData();
   
   if (monthExpenses.length === 0) {
-    // Clear all charts if no data
     Object.values(appState.chartInstances).forEach(chart => {
       if (chart) chart.destroy();
     });
@@ -427,7 +433,7 @@ function updatePieChart(expenses) {
         data: data,
         backgroundColor: [
           '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
-          '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16'
+          '#ec4899', '#0284c7', '#f97316', '#6366f1', '#84cc16'
         ],
         borderColor: '#ffffff',
         borderWidth: 2
