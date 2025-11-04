@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sahil's Budget & Expense Tracker</title>
+<title>Sahil's Budget &amp; Expense Tracker</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -12,25 +12,30 @@
 <div class="app-container">
 <!-- Header -->
 <header class="app-header">
-<div class="header-content">
-<h1>♦️ Sahil's Budget & Expense Tracker</h1>
-<p class="header-tagline">Professional Financial Dashboard | Track, Analyze, Succeed</p>
-</div>
+<h1>♦️ Sahil's Budget &amp; Expense Tracker</h1>
+<p class="tagline">Professional Financial Dashboard | Track, Analyze, Succeed</p>
 <p class="subtitle">Track income, expenses, and manage your budget with ease</p>
 </header>
 
-<!-- Controls Section -->
-<section class="section controls-section">
-<div class="controls-grid">
-<div class="control-item">
+<!-- Currency, Year & Month Selector -->
+<section class="section selectors-section">
+<div class="selectors-content">
+<div class="selector-group">
 <label for="currency-select">Currency:</label>
-<select id="currency-select" class="form-control">
+<select id="currency-select" class="form-control selector-dropdown">
 <option value="USD">USD ($)</option>
 <option value="CAD">CAD (C$)</option>
 </select>
 </div>
-<div class="control-item">
-<label for="month-select">Select Month:</label>
+<div class="selector-group">
+<label for="year-select">Year:</label>
+<select id="year-select" class="form-control selector-dropdown">
+<option value="2025">2025</option>
+<option value="2026">2026</option>
+</select>
+</div>
+<div class="selector-group">
+<label for="month-select">Month:</label>
 <select id="month-select" class="form-control month-select-dropdown">
 <option value="0">January</option>
 <option value="1">February</option>
@@ -46,23 +51,13 @@
 <option value="11">December</option>
 </select>
 </div>
-<div class="control-item">
-<label for="year-select">Year:</label>
-<select id="year-select" class="form-control">
-<option value="2025">2025</option>
-<option value="2026">2026</option>
-</select>
-</div>
 </div>
 </section>
-
-<!-- Alerts Container -->
-<div id="alerts-container" class="alerts-container"></div>
 
 <!-- Income & Cash Flow Overview -->
 <section class="section income-overview">
 <div class="section-header">
-<h2>💵 Income & Cash Flow Overview</h2>
+<h2>💵 Income &amp; Cash Flow Overview</h2>
 <p class="section-description">Set your monthly income and view your financial status</p>
 </div>
 <div class="overview-grid">
@@ -91,81 +86,60 @@
 </div>
 </section>
 
-<!-- Income Breakdown Section -->
+<!-- NEW: Income Breakdown Section -->
 <section class="section income-breakdown">
 <div class="section-header">
 <h2>💰 Income Breakdown</h2>
-<p class="section-description">Track all your income sources</p>
+<p class="section-description">Manage your income sources in detail</p>
 </div>
 
 <!-- 1:1 Clients -->
-<div class="income-category-block">
+<div class="income-subsection">
 <h3>👤 1:1 Clients</h3>
-<div class="income-slots" id="1v1-clients-slots">
-<div class="income-slot">
-<input type="text" placeholder="Client Name" class="income-client-name">
-<div class="currency-input-wrapper">
-<input type="number" placeholder="Amount" class="income-amount currency-input" min="0" step="0.01">
-</div>
-<button class="btn btn-sm btn-danger-outline delete-income-btn" onclick="deleteIncomeSlot(this, '1v1')">Delete</button>
-</div>
-</div>
-<button class="btn btn-secondary btn-sm add-income-btn" onclick="addIncomeSlot('1v1')">+ Add More</button>
-<div class="income-total">
+<div id="one-to-one-list" class="client-list"></div>
+<button class="btn btn-add" id="add-one-to-one-btn">+ Add More</button>
+<div class="income-subtotal">
 <span>Total from 1:1 Clients:</span>
-<span class="income-total-amount" id="total-1v1">$0.00</span>
+<span id="one-to-one-total">$0.00</span>
 </div>
 </div>
 
 <!-- Group Clients -->
-<div class="income-category-block">
+<div class="income-subsection">
 <h3>👥 Group Clients</h3>
-<div class="income-slots" id="group-clients-slots">
-<div class="income-slot">
-<input type="text" placeholder="Client Name" class="income-client-name">
-<div class="currency-input-wrapper">
-<input type="number" placeholder="Amount" class="income-amount currency-input" min="0" step="0.01">
-</div>
-<button class="btn btn-sm btn-danger-outline delete-income-btn" onclick="deleteIncomeSlot(this, 'group')">Delete</button>
-</div>
-</div>
-<button class="btn btn-secondary btn-sm add-income-btn" onclick="addIncomeSlot('group')">+ Add More</button>
-<div class="income-total">
+<div id="group-list" class="client-list"></div>
+<button class="btn btn-add" id="add-group-btn">+ Add More</button>
+<div class="income-subtotal">
 <span>Total from Group Clients:</span>
-<span class="income-total-amount" id="total-group">$0.00</span>
+<span id="group-total">$0.00</span>
 </div>
 </div>
 
 <!-- Investment Income -->
-<div class="income-category-block">
+<div class="income-subsection">
 <h3>📈 Investment Income</h3>
 <div class="currency-input-wrapper">
-<input type="number" id="investment-income" placeholder="Enter amount" class="currency-input" min="0" step="0.01">
-</div>
-<div class="income-total">
-<span>Investment Income:</span>
-<span class="income-total-amount" id="total-investment">$0.00</span>
+<input type="number" id="investment-income" class="currency-input" min="0" step="0.01" placeholder="Enter investment income">
 </div>
 </div>
 
 <!-- Other Income -->
-<div class="income-category-block">
+<div class="income-subsection">
 <h3>💵 Other Income</h3>
 <div class="currency-input-wrapper">
-<input type="number" id="other-income" placeholder="Enter amount" class="currency-input" min="0" step="0.01">
-</div>
-<div class="income-total">
-<span>Other Income:</span>
-<span class="income-total-amount" id="total-other">$0.00</span>
+<input type="number" id="other-income" class="currency-input" min="0" step="0.01" placeholder="Enter other income">
 </div>
 </div>
 
-<!-- Grand Total Income -->
+<!-- Grand Total -->
 <div class="grand-total-income">
-<span>Total Monthly Income:</span>
-<span class="total-amount" id="grand-total-income">$0.00</span>
+<span>💰 GRAND TOTAL INCOME</span>
+<span id="grand-total-income">$0.00</span>
 </div>
 </section>
+
+<!-- Alerts Container -->
+<div id="alerts-container" class="alerts-container"></div>
 
 <!-- Budget Setup Section -->
 <section class="section budget-setup">
@@ -205,6 +179,13 @@
 </div>
 </div>
 <div class="budget-item">
+<label for="budget-other">📦 Other</label>
+<div class="currency-input-wrapper">
+<input type="number" id="budget-other" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+</div>
+</div>
+<!-- NEW CATEGORIES -->
+<div class="budget-item">
 <label for="budget-business">💼 Business Expenses</label>
 <div class="currency-input-wrapper">
 <input type="number" id="budget-business" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
@@ -226,12 +207,6 @@
 <label for="budget-daycare">🎓 Shayna Day Care Fee</label>
 <div class="currency-input-wrapper">
 <input type="number" id="budget-daycare" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
-</div>
-</div>
-<div class="budget-item">
-<label for="budget-other">📦 Other</label>
-<div class="currency-input-wrapper">
-<input type="number" id="budget-other" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
 </div>
 </div>
 </div>
@@ -272,11 +247,11 @@
 <option value="Entertainment">🎬 Entertainment</option>
 <option value="Shopping">🛍️ Shopping</option>
 <option value="Bills">💡 Bills</option>
+<option value="Other">📦 Other</option>
 <option value="Business Expenses">💼 Business Expenses</option>
 <option value="Gym">🏋️ Gym</option>
 <option value="Travel">✈️ Travel</option>
 <option value="Shayna Day Care Fee">🎓 Shayna Day Care Fee</option>
-<option value="Other">📦 Other</option>
 </select>
 </div>
 <div class="form-group">
@@ -308,20 +283,20 @@
 <p class="section-description">Your financial overview</p>
 </div>
 
-<!-- Summary Cards -->
+<!-- NEW: Summary Cards with Cash Inflow/Outflow -->
 <div class="summary-cards">
-<div class="summary-card inflow-card">
+<div class="summary-card card-inflow">
 <div class="card-icon">💰</div>
 <div class="card-content">
 <p class="card-label">Total Cash Inflow</p>
-<p class="card-value" id="total-inflow">$0.00</p>
+<p class="card-value" id="total-cash-inflow">$0.00</p>
 </div>
 </div>
-<div class="summary-card outflow-card">
+<div class="summary-card card-outflow">
 <div class="card-icon">💸</div>
 <div class="card-content">
 <p class="card-label">Total Cash Outflow</p>
-<p class="card-value" id="total-outflow">$0.00</p>
+<p class="card-value" id="total-cash-outflow">$0.00</p>
 </div>
 </div>
 <div class="summary-card">
@@ -407,7 +382,7 @@
 <!-- Export & Backup Section -->
 <section class="section export-section">
 <div class="section-header">
-<h2>💾 Export & Backup</h2>
+<h2>💾 Export &amp; Backup</h2>
 <p class="section-description">Download your financial data</p>
 </div>
 <div class="export-buttons">
