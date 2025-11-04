@@ -746,7 +746,7 @@ select.form-control {
 
 body {
     font-family: var(--font-family-base);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
     min-height: 100vh;
     padding: var(--space-16);
     color: var(--color-text);
@@ -762,10 +762,9 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
-/* Header */
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+    color: var(--color-btn-primary-text);
     padding: var(--space-32) var(--space-20);
     text-align: center;
 }
@@ -788,9 +787,8 @@ body {
     opacity: 0.9;
 }
 
-/* Selectors Section */
 .selectors-section {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-hover) 100%);
     padding: var(--space-20);
 }
 
@@ -808,7 +806,7 @@ body {
 }
 
 .selector-group label {
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-sm);
 }
@@ -819,7 +817,7 @@ body {
     border-radius: var(--radius-base);
     font-size: var(--font-size-base);
     background: rgba(255, 255, 255, 0.15);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
     transition: all var(--duration-normal) var(--ease-standard);
@@ -828,7 +826,7 @@ body {
 
 .form-control option {
     background: var(--color-charcoal-700);
-    color: var(--color-white);
+    color: var(--color-text);
 }
 
 .form-control:focus {
@@ -838,7 +836,6 @@ body {
     box-shadow: var(--focus-ring);
 }
 
-/* Sections */
 .section {
     padding: var(--space-32) var(--space-20);
     border-bottom: 1px solid var(--color-border);
@@ -864,7 +861,6 @@ body {
     font-size: var(--font-size-base);
 }
 
-/* Overview Cards */
 .overview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -873,9 +869,9 @@ body {
 }
 
 .overview-card {
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     padding: var(--space-20);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     transition: transform var(--duration-normal) var(--ease-standard), box-shadow var(--duration-normal) var(--ease-standard);
 }
@@ -886,15 +882,15 @@ body {
 }
 
 .income-card {
-    background: linear-gradient(135deg, var(--color-teal-500) 0%, var(--color-teal-600) 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
 }
 
 .expenses-card {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--color-error) 0%, var(--color-red-400) 100%);
 }
 
 .cashflow-card {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, var(--color-teal-300) 0%, var(--color-teal-400) 100%);
 }
 
 .budget-status-overview {
@@ -907,7 +903,7 @@ body {
     margin-bottom: var(--space-12);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .card-value-large {
@@ -935,7 +931,6 @@ body {
     opacity: 0.9;
 }
 
-/* Currency Input Wrapper - FIXED PADDING */
 .currency-input-wrapper {
     position: relative;
     margin: var(--space-8) 0;
@@ -943,7 +938,7 @@ body {
 
 .currency-input {
     width: 100%;
-    padding: var(--space-10) var(--space-10) var(--space-10) 28px;
+    padding: var(--space-10) var(--space-10) var(--space-10) var(--space-24);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-base);
     font-size: var(--font-size-base);
@@ -971,9 +966,45 @@ body {
     pointer-events: none;
 }
 
-/* Income Breakdown */
+.currency-input-wrapper-expense {
+    position: relative;
+    margin: var(--space-8) 0;
+}
+
+.expense-amount-input {
+    width: 100%;
+    padding: var(--space-10) var(--space-10) var(--space-10) var(--space-24);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    background: var(--color-surface);
+    color: var(--color-text);
+    transition: all var(--duration-normal) var(--ease-standard);
+    cursor: text;
+    font-family: var(--font-family-base);
+}
+
+.expense-amount-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+    cursor: text;
+}
+
+.currency-input-wrapper-expense::before {
+    content: '$';
+    position: absolute;
+    left: var(--space-8);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    pointer-events: none;
+}
+
 .income-breakdown {
-    background: linear-gradient(to bottom, var(--color-background), var(--color-surface));
+    background: var(--color-background);
 }
 
 .income-subsection {
@@ -1015,24 +1046,31 @@ body {
     border-radius: var(--radius-base);
     font-size: var(--font-size-sm);
     width: 100%;
-    font-family: var(--font-family-base);
-    color: var(--color-text);
+    cursor: text;
     background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
 }
 
 .client-row input:focus {
     outline: none;
     border-color: var(--color-primary);
+    cursor: text;
     box-shadow: var(--focus-ring);
 }
 
 .btn-add {
     margin-bottom: var(--space-12);
     background: var(--color-text-secondary);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     width: auto;
     padding: var(--space-8) var(--space-16);
     font-size: var(--font-size-xs);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-base);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--duration-normal) var(--ease-standard);
 }
 
 .btn-add:hover {
@@ -1041,7 +1079,7 @@ body {
 
 .delete-client-btn {
     background: var(--color-error);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     border: none;
     padding: var(--space-6) var(--space-12);
     border-radius: var(--radius-sm);
@@ -1050,7 +1088,6 @@ body {
     transition: all var(--duration-normal) var(--ease-standard);
     font-size: var(--font-size-xs);
     width: auto;
-    font-family: var(--font-family-base);
 }
 
 .delete-client-btn:hover {
@@ -1080,7 +1117,7 @@ body {
     align-items: center;
     padding: var(--space-16);
     background: linear-gradient(135deg, var(--color-success) 0%, var(--color-teal-300) 100%);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     border-radius: var(--radius-lg);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
@@ -1091,7 +1128,6 @@ body {
     font-weight: var(--font-weight-bold);
 }
 
-/* Budget Grid */
 .budget-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1126,7 +1162,7 @@ body {
     align-items: center;
     padding: var(--space-16);
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     border-radius: var(--radius-lg);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
@@ -1142,8 +1178,8 @@ body {
     display: none;
     padding: var(--space-12);
     background: var(--color-success);
-    color: var(--color-white);
-    border-radius: var(--radius-base);
+    color: var(--color-btn-primary-text);
+    border-radius: var(--radius-md);
     margin-top: var(--space-12);
     text-align: center;
     font-weight: var(--font-weight-medium);
@@ -1153,11 +1189,10 @@ body {
     display: block;
 }
 
-/* Forms */
 .expense-form {
     background: var(--color-background);
     padding: var(--space-24);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     margin-bottom: var(--space-24);
 }
 
@@ -1187,7 +1222,7 @@ body {
     font-size: var(--font-size-base);
     background: var(--color-surface);
     color: var(--color-text);
-    transition: all var(--duration-normal) var(--ease-standard);
+    font-family: var(--font-family-base);
 }
 
 .form-actions {
@@ -1203,7 +1238,6 @@ body {
     margin-bottom: var(--space-24);
 }
 
-/* Buttons */
 .btn {
     padding: var(--space-10) var(--space-20);
     border: none;
@@ -1213,7 +1247,7 @@ body {
     cursor: pointer;
     transition: all var(--duration-normal) var(--ease-standard);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: var(--letter-spacing-tight);
     width: 100%;
     font-family: var(--font-family-base);
 }
@@ -1236,7 +1270,7 @@ body {
 
 .btn-success {
     background: var(--color-success);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-success:hover {
@@ -1245,7 +1279,7 @@ body {
 
 .btn-secondary {
     background: var(--color-text-secondary);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-secondary:hover {
@@ -1254,7 +1288,7 @@ body {
 
 .btn-danger {
     background: var(--color-error);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-danger:hover {
@@ -1272,12 +1306,12 @@ body {
 
 .btn-danger-outline:hover {
     background: var(--color-error);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-export {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-orange-400) 100%);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-export:hover {
@@ -1290,7 +1324,6 @@ body {
     width: auto;
 }
 
-/* Expenses List */
 .recent-expenses h3 {
     font-size: var(--font-size-xl);
     color: var(--color-text);
@@ -1351,7 +1384,7 @@ body {
 
 .delete-btn {
     background: var(--color-error);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     border: none;
     padding: var(--space-6) var(--space-12);
     border-radius: var(--radius-sm);
@@ -1360,7 +1393,6 @@ body {
     transition: all var(--duration-normal) var(--ease-standard);
     font-size: var(--font-size-xs);
     white-space: nowrap;
-    font-family: var(--font-family-base);
 }
 
 .delete-btn:hover {
@@ -1374,7 +1406,6 @@ body {
     font-size: var(--font-size-base);
 }
 
-/* Dashboard */
 .summary-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1384,9 +1415,9 @@ body {
 
 .summary-card {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
     padding: var(--space-20);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     display: flex;
     align-items: center;
@@ -1403,7 +1434,7 @@ body {
 }
 
 .card-outflow {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--color-error) 0%, var(--color-red-400) 100%);
 }
 
 .card-icon {
@@ -1419,7 +1450,7 @@ body {
     opacity: 0.9;
     margin-bottom: var(--space-6);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .card-value {
@@ -1434,14 +1465,13 @@ body {
 }
 
 .status-card.over-budget {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--color-error) 0%, var(--color-red-400) 100%);
 }
 
 .status-card.on-track {
     background: linear-gradient(135deg, var(--color-success) 0%, var(--color-teal-300) 100%);
 }
 
-/* Category Breakdown */
 .category-breakdown {
     margin-bottom: var(--space-32);
 }
@@ -1468,7 +1498,7 @@ body {
 
 .breakdown-table thead {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .breakdown-table th {
@@ -1476,7 +1506,7 @@ body {
     text-align: left;
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: var(--letter-spacing-tight);
     font-size: var(--font-size-xs);
 }
 
@@ -1499,21 +1529,20 @@ body {
 }
 
 .status-badge.on-track {
-    background: rgba(var(--color-success-rgb), 0.15);
+    background: rgba(var(--color-success-rgb), var(--status-bg-opacity));
     color: var(--color-success);
 }
 
 .status-badge.warning {
-    background: rgba(var(--color-warning-rgb), 0.15);
+    background: rgba(var(--color-warning-rgb), var(--status-bg-opacity));
     color: var(--color-warning);
 }
 
 .status-badge.over {
-    background: rgba(var(--color-error-rgb), 0.15);
+    background: rgba(var(--color-error-rgb), var(--status-bg-opacity));
     color: var(--color-error);
 }
 
-/* Progress Bars */
 .progress-section h3 {
     font-size: var(--font-size-xl);
     color: var(--color-text);
@@ -1555,18 +1584,18 @@ body {
     width: 100%;
     height: 10px;
     background: var(--color-border);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-md);
     overflow: hidden;
 }
 
 .progress-bar {
     height: 100%;
     transition: width 0.5s var(--ease-standard);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-md);
 }
 
 .progress-bar.on-track {
-    background: linear-gradient(90deg, var(--color-success), var(--color-teal-400));
+    background: linear-gradient(90deg, var(--color-success), var(--color-teal-300));
 }
 
 .progress-bar.warning {
@@ -1577,7 +1606,6 @@ body {
     background: linear-gradient(90deg, var(--color-error), var(--color-red-400));
 }
 
-/* Charts */
 .charts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1587,7 +1615,7 @@ body {
 .chart-container {
     background: var(--color-surface);
     padding: var(--space-24);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
 }
 
@@ -1596,6 +1624,7 @@ body {
     color: var(--color-text);
     margin-bottom: var(--space-16);
     text-align: center;
+    font-weight: var(--font-weight-semibold);
 }
 
 .chart-wrapper {
@@ -1610,14 +1639,12 @@ body {
     margin-top: var(--space-12);
 }
 
-/* Export Section */
 .export-buttons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--space-12);
 }
 
-/* Alerts */
 .alerts-container {
     position: fixed;
     top: var(--space-16);
@@ -1628,7 +1655,7 @@ body {
 
 .alert {
     padding: var(--space-12) var(--space-16);
-    border-radius: var(--radius-base);
+    border-radius: var(--radius-md);
     margin-bottom: var(--space-8);
     box-shadow: var(--shadow-lg);
     animation: slideIn var(--duration-normal) var(--ease-standard);
@@ -1651,25 +1678,24 @@ body {
 
 .alert-success {
     background: var(--color-success);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .alert-error {
     background: var(--color-error);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .alert-warning {
     background: var(--color-warning);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
 .alert-info {
     background: var(--color-info);
-    color: var(--color-white);
+    color: var(--color-btn-primary-text);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     body {
         padding: var(--space-10);
@@ -1701,15 +1727,18 @@ body {
 
     .client-row {
         grid-template-columns: 1fr;
+        gap: var(--space-8);
     }
 
     .expense-item {
         grid-template-columns: 1fr;
+        gap: var(--space-12);
     }
 
     .expense-amount,
     .delete-btn {
         width: 100%;
+        text-align: center;
     }
 
     .income-subtotal,
@@ -1732,6 +1761,7 @@ body {
     .progress-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: var(--space-4);
     }
 
     .alerts-container {
@@ -1760,20 +1790,12 @@ body {
 }
 
 @media (max-width: 480px) {
-    body {
-        padding: var(--space-8);
-    }
-
-    .app-header {
-        padding: var(--space-16) var(--space-12);
-    }
-
     .app-header h1 {
-        font-size: var(--font-size-2xl);
+        font-size: var(--font-size-xl);
     }
 
     .tagline {
-        font-size: var(--font-size-sm);
+        font-size: var(--font-size-xs);
     }
 
     .subtitle {
@@ -1809,25 +1831,11 @@ body {
     .chart-wrapper {
         height: 200px;
     }
-
-    .selectors-content {
-        grid-template-columns: 1fr;
-        gap: var(--space-12);
-    }
-
-    .form-row {
-        gap: var(--space-12);
-    }
-
-    .btn {
-        padding: var(--space-8) var(--space-12);
-        font-size: var(--font-size-xs);
-    }
 }
 
 @media print {
     body {
-        background: var(--color-white);
+        background: var(--color-surface);
     }
 
     .app-header,
