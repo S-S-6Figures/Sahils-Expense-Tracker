@@ -4,6 +4,10 @@ let appState = {
   currentMonth: 0,
   currency: 'USD',
   monthlyIncome: 0,
+  oneToOneClients: [],
+  groupClients: [],
+  investmentIncome: 0,
+  otherIncome: 0,
   budgets: {},
   expenses: [],
   chartInstances: {}
@@ -31,6 +35,10 @@ function initializeApp() {
   BUDGET_CATEGORIES.forEach(category => {
     appState.budgets[category] = 0;
   });
+  
+  // Render empty client rows
+  renderOneToOneClients();
+  renderGroupClients();
 }
 
 // ==================== EVENT LISTENERS ====================
@@ -43,17 +51,26 @@ function setUpEventListeners() {
   
   document.getElementById('year-select').addEventListener('change', (e) => {
     appState.currentYear = parseInt(e.target.value);
+    loadDataFromStorage();
     updateAllDisplays();
   });
   
   document.getElementById('month-select').addEventListener('change', (e) => {
     appState.currentMonth = parseInt(e.target.value);
+    loadDataFromStorage();
     updateAllDisplays();
   });
   
-  // Income
-  document.getElementById('save-income-btn').addEventListener('click', saveIncome);
+  // Income inputs - real-time updates
   document.getElementById('monthly-income').addEventListener('input', updateIncomeDisplay);
+  document.getElementById('save-income-btn').addEventListener('click', saveIncome);
+  
+  document.getElementById('investment-income').addEventListener('input', updateTotalIncome);
+  document.getElementById('other-income').addEventListener('input', updateTotalIncome);
+  
+  // Income breakdown buttons
+  document.getElementById('add-one-to-one-btn').addEventListener('click', addOneToOneRow);
+  document.getElementById('add-group-btn').addEventListener('click', addGroupRow);
   
   // Budget inputs - real-time calculation
   BUDGET_CATEGORIES.forEach(category => {
@@ -78,10 +95,113 @@ function setUpEventListeners() {
   document.getElementById('clear-all-btn').addEventListener('click', clearAllData);
 }
 
-// ==================== INCOME FUNCTIONS ====================
+// ==================== 1:1 CLIENTS MANAGEMENT ====================
+function addOneToOneRow() {
+  appState.oneToOneClients.push({ name: '', amount: 0 });
+  renderOneToOneClients();
+  updateTotalIncome();
+}
+
+function deleteOneToOneRow(index) {
+  appState.oneToOneClients.splice(index, 1);
+  renderOneToOneClients();
+  updateTotalIncome();
+}
+
+function renderOneToOneClients() {
+  const container = document.getElementById('one-to-one-list');
+  
+  if (appState.oneToOneClients.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  
+  container.innerHTML = appState.oneToOneClients.map((client, index) => `
+    <div class="client-row">
+      <input type="text" placeholder="Client name" value="${client.name}" 
+        onchange="appState.oneToOneClients[${index}].name = this.value; updateTotalIncome();">
+      <div class="currency-input-wrapper" style="margin: 0;">
+        <input type="number" min="0" step="0.01" placeholder="0.00" value="${client.amount}" 
+          onchange="appState.oneToOneClients[${index}].amount = parseFloat(this.value) || 0; updateTotalIncome();" 
+          class="currency-input" style="padding-left: 28px;">
+      </div>
+      <button type="button" class="delete-client-btn" onclick="deleteOneToOneRow(${index})">Delete</button>
+    </div>
+  `).join('');
+}
+
+// ==================== GROUP CLIENTS MANAGEMENT ====================
+function addGroupRow() {
+  appState.groupClients.push({ name: '', amount: 0 });
+  renderGroupClients();
+  updateTotalIncome();
+}
+
+function deleteGroupRow(index) {
+  appState.groupClients.splice(index, 1);
+  renderGroupClients();
+  updateTotalIncome();
+}
+
+function renderGroupClients() {
+  const container = document.getElementById('group-list');
+  
+  if (appState.groupClients.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  
+  container.innerHTML = appState.groupClients.map((group, index) => `
+    <div class="client-row">
+      <input type="text" placeholder="Group name" value="${group.name}" 
+        onchange="appState.groupClients[${index}].name = this.value; updateTotalIncome();">
+      <div class="currency-input-wrapper" style="margin: 0;">
+        <input type="number" min="0" step="0.01" placeholder="0.00" value="${group.amount}" 
+          onchange="appState.groupClients[${index}].amount = parseFloat(this.value) || 0; updateTotalIncome();" 
+          class="currency-input" style="padding-left: 28px;">
+      </div>
+      <button type="button" class="delete-client-btn" onclick="deleteGroupRow(${index})">Delete</button>
+    </div>
+  `).join('');
+}
+
+// ==================== INCOME CALCULATIONS ====================
+function getOneToOneTotal() {
+  return appState.oneToOneClients.reduce((sum, client) => sum + (client.amount || 0), 0);
+}
+
+function getGroupTotal() {
+  return appState.groupClients.reduce((sum, group) => sum + (group.amount || 0), 0);
+}
+
+function getInvestmentIncome() {
+  return parseFloat(document.getElementById('investment-income').value) || 0;
+}
+
+function getOtherIncome() {
+  return parseFloat(document.getElementById('other-income').value) || 0;
+}
+
+function getTotalIncomeFromBreakdown() {
+  return getOneToOneTotal() + getGroupTotal() + getInvestmentIncome() + getOtherIncome();
+}
+
 function updateIncomeDisplay() {
   const income = parseFloat(document.getElementById('monthly-income').value) || 0;
   document.getElementById('income-display').textContent = formatCurrency(income);
+  updateDashboard();
+}
+
+function updateTotalIncome() {
+  // Update subtotals
+  document.getElementById('one-to-one-total').textContent = formatCurrency(getOneToOneTotal());
+  document.getElementById('group-total').textContent = formatCurrency(getGroupTotal());
+  
+  // Update grand total (all income sources combined)
+  const grandTotal = getTotalIncomeFromBreakdown();
+  document.getElementById('grand-total-income').textContent = formatCurrency(grandTotal);
+  
+  saveDataToStorage();
   updateDashboard();
 }
 
@@ -89,7 +209,7 @@ function saveIncome() {
   const income = parseFloat(document.getElementById('monthly-income').value) || 0;
   appState.monthlyIncome = income;
   saveDataToStorage();
-  showSuccessMessage('Income saved successfully!');
+  alert('âœ“ Income saved successfully');
   updateAllDisplays();
 }
 
@@ -110,10 +230,10 @@ function updateBudgetTotal() {
 function saveBudget() {
   updateBudgetTotal();
   saveDataToStorage();
-  showSuccessMessage('âœ“ Budget saved successfully');
-  document.getElementById('budget-success-msg').classList.add('show');
+  const msg = document.getElementById('budget-success-msg');
+  msg.classList.add('show');
   setTimeout(() => {
-    document.getElementById('budget-success-msg').classList.remove('show');
+    msg.classList.remove('show');
   }, 3000);
 }
 
@@ -186,19 +306,21 @@ function getCategoryBudget(category) {
 
 // ==================== DASHBOARD UPDATE ====================
 function updateDashboard() {
-  const monthlyIncome = appState.monthlyIncome;
+  // Use breakdown total for all calculations
+  const totalIncome = getTotalIncomeFromBreakdown();
   const totalExpenses = getTotalExpenses();
   const totalBudget = getTotalBudget();
-  const netCashFlow = monthlyIncome - totalExpenses;
+  const netCashFlow = totalIncome - totalExpenses;
+  const remainingBudget = totalBudget - totalExpenses;
   
-  // Update Overview Cards
-  document.getElementById('income-display').textContent = formatCurrency(monthlyIncome);
+  // Update Overview Cards (Top section)
+  document.getElementById('income-display').textContent = formatCurrency(totalIncome);
   document.getElementById('overview-total-expenses').textContent = formatCurrency(totalExpenses);
   document.getElementById('net-cashflow').textContent = formatCurrency(netCashFlow);
   
-  // Update Dashboard Cards (CORRECTED CALCULATIONS)
-  // Total Income = Monthly Income
-  document.getElementById('total-cash-inflow').textContent = formatCurrency(monthlyIncome);
+  // Update Dashboard Cards (ACCURATE CALCULATIONS)
+  // Total Income = All income sources combined
+  document.getElementById('total-cash-inflow').textContent = formatCurrency(totalIncome);
   
   // Total Budget = Sum of all category budgets
   document.getElementById('total-cash-outflow').textContent = formatCurrency(totalBudget);
@@ -207,7 +329,6 @@ function updateDashboard() {
   document.getElementById('total-spent').textContent = formatCurrency(totalExpenses);
   
   // Remaining Budget = Total Budget - Total Spent
-  const remainingBudget = totalBudget - totalExpenses;
   document.getElementById('remaining-budget').textContent = formatCurrency(remainingBudget);
   
   updateCategoryBreakdown();
@@ -403,7 +524,6 @@ function updateBarChart() {
 function updateLineChart() {
   const ctx = document.getElementById('line-chart').getContext('2d');
   
-  // Get daily totals for the month
   const dailyData = {};
   const daysInMonth = new Date(appState.currentYear, appState.currentMonth + 1, 0).getDate();
   
@@ -530,10 +650,7 @@ function formatCurrency(amount) {
 function updateAllDisplays() {
   updateDashboard();
   updateExpensesList();
-}
-
-function showSuccessMessage(msg) {
-  alert(msg);
+  updateTotalIncome();
 }
 
 // ==================== DATA PERSISTENCE ====================
@@ -541,6 +658,10 @@ function saveDataToStorage() {
   const key = `expense-tracker-${appState.currentYear}-${appState.currentMonth}`;
   const data = {
     monthlyIncome: appState.monthlyIncome,
+    oneToOneClients: appState.oneToOneClients,
+    groupClients: appState.groupClients,
+    investmentIncome: getInvestmentIncome(),
+    otherIncome: getOtherIncome(),
     budgets: appState.budgets,
     expenses: appState.expenses.filter(exp => 
       exp.year === appState.currentYear && 
@@ -557,6 +678,24 @@ function loadDataFromStorage() {
   if (data.monthlyIncome !== undefined) {
     appState.monthlyIncome = data.monthlyIncome;
     document.getElementById('monthly-income').value = data.monthlyIncome;
+  }
+  
+  if (data.oneToOneClients) {
+    appState.oneToOneClients = data.oneToOneClients;
+    renderOneToOneClients();
+  }
+  
+  if (data.groupClients) {
+    appState.groupClients = data.groupClients;
+    renderGroupClients();
+  }
+  
+  if (data.investmentIncome !== undefined) {
+    document.getElementById('investment-income').value = data.investmentIncome;
+  }
+  
+  if (data.otherIncome !== undefined) {
+    document.getElementById('other-income').value = data.otherIncome;
   }
   
   if (data.budgets) {
@@ -597,7 +736,7 @@ function exportExpenses() {
 }
 
 function exportReport() {
-  const totalIncome = appState.monthlyIncome;
+  const totalIncome = getTotalIncomeFromBreakdown();
   const totalBudget = getTotalBudget();
   const totalSpent = getTotalExpenses();
   const remaining = totalBudget - totalSpent;
@@ -627,10 +766,14 @@ function exportJSON() {
     year: appState.currentYear,
     month: appState.currentMonth,
     monthlyIncome: appState.monthlyIncome,
+    oneToOneClients: appState.oneToOneClients,
+    groupClients: appState.groupClients,
+    investmentIncome: getInvestmentIncome(),
+    otherIncome: getOtherIncome(),
     budgets: appState.budgets,
     expenses: getCurrentMonthData(),
     summary: {
-      totalIncome: appState.monthlyIncome,
+      totalIncome: getTotalIncomeFromBreakdown(),
       totalBudget: getTotalBudget(),
       totalSpent: getTotalExpenses(),
       remainingBudget: getTotalBudget() - getTotalExpenses()
@@ -671,6 +814,8 @@ function clearMonthData() {
 function clearAllData() {
   if (confirm('Are you sure you want to clear ALL data? This cannot be undone!')) {
     appState.monthlyIncome = 0;
+    appState.oneToOneClients = [];
+    appState.groupClients = [];
     appState.budgets = {};
     appState.expenses = [];
     
@@ -679,10 +824,16 @@ function clearAllData() {
     });
     
     document.getElementById('monthly-income').value = '';
+    document.getElementById('investment-income').value = '';
+    document.getElementById('other-income').value = '';
+    
     BUDGET_CATEGORIES.forEach(category => {
       const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-')}`;
       document.getElementById(inputId).value = '';
     });
+    
+    renderOneToOneClients();
+    renderGroupClients();
     
     localStorage.clear();
     updateAllDisplays();
