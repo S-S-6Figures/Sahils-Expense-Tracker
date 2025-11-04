@@ -57,7 +57,7 @@
 </div>
 </section>
 
-<!-- Income Overview Section -->
+<!-- Income Overview Section (Top Level) -->
 <section class="section income-overview">
 <div class="section-header">
 <h2>💰 Income & Cash Flow Overview</h2>
@@ -81,6 +81,52 @@
 <div class="card-header">Net Cash Flow</div>
 <div class="card-value-large" id="net-cashflow">$0.00</div>
 </div>
+</div>
+</section>
+
+<!-- Income Breakdown Section -->
+<section class="section income-breakdown">
+<div class="section-header">
+<h2>💼 Income Breakdown</h2>
+</div>
+
+<div class="income-subsection">
+<h3>1:1 Clients</h3>
+<div id="one-to-one-list"></div>
+<button class="btn btn-add" id="add-one-to-one-btn">+ Add Client</button>
+<div class="income-subtotal">
+<span>Subtotal: </span>
+<span id="one-to-one-total">$0.00</span>
+</div>
+</div>
+
+<div class="income-subsection">
+<h3>Group Clients</h3>
+<div id="group-list"></div>
+<button class="btn btn-add" id="add-group-btn">+ Add Group</button>
+<div class="income-subtotal">
+<span>Subtotal: </span>
+<span id="group-total">$0.00</span>
+</div>
+</div>
+
+<div class="income-subsection">
+<h3>Investment Income</h3>
+<div class="currency-input-wrapper">
+<input type="number" id="investment-income" class="currency-input income-input" min="0" step="0.01" placeholder="0.00">
+</div>
+</div>
+
+<div class="income-subsection">
+<h3>Other Income</h3>
+<div class="currency-input-wrapper">
+<input type="number" id="other-income" class="currency-input income-input" min="0" step="0.01" placeholder="0.00">
+</div>
+</div>
+
+<div class="grand-total-income">
+<span>Total Income from All Sources</span>
+<span id="grand-total-income">$0.00</span>
 </div>
 </section>
 
@@ -283,7 +329,7 @@
 <canvas id="bar-chart"></canvas>
 </div>
 <div class="chart-container">
-<h3>Monthly Cash Flow</h3>
+<h3>Daily Cash Flow Trend</h3>
 <canvas id="line-chart"></canvas>
 </div>
 <div class="chart-container">
