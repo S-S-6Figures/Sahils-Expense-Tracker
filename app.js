@@ -1,19 +1,7 @@
-// Categories
 const categories = ['Food', 'Transportation', 'Entertainment', 'Shopping', 'Bills', 'Other', 'Business Expenses', 'Gym', 'Travel', 'Shayna Day Care Fee'];
-
-const categoryEmojis = {
-    'Food': 'ðŸ”', 'Transportation': 'ðŸš—', 'Entertainment': 'ðŸŽ¬', 'Shopping': 'ðŸ›ï¸', 'Bills': 'ðŸ’¡',
-    'Other': 'ðŸ“¦', 'Business Expenses': 'ðŸ’¼', 'Gym': 'ðŸ‹ï¸', 'Travel': 'âœˆï¸', 'Shayna Day Care Fee': 'ðŸŽ“'
-};
-
-const categoryColors = {
-    'Food': '#ef4444', 'Transportation': '#f59e0b', 'Entertainment': '#8b5cf6', 'Shopping': '#ec4899', 'Bills': '#3b82f6',
-    'Other': '#6b7280', 'Business Expenses': '#6366f1', 'Gym': '#10b981', 'Travel': '#06b6d4', 'Shayna Day Care Fee': '#14b8a6'
-};
 
 const currencies = { 'USD': '$', 'CAD': 'C$' };
 
-// State
 let currentMonth = new Date().getMonth();
 let currentYear = 2025;
 let selectedCurrency = 'USD';
@@ -24,7 +12,6 @@ let incomeData = { oneToOne: [], group: [], investment: 0, other: 0 };
 let pieChart = null;
 let barChart = null;
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
     setupEventListeners();
@@ -72,7 +59,9 @@ function setupEventListeners() {
     document.getElementById('add-group-btn').addEventListener('click', addGroupRow);
     
     document.getElementById('investment-income').addEventListener('change', updateIncomeDisplay);
+    document.getElementById('investment-income').addEventListener('input', updateIncomeDisplay);
     document.getElementById('other-income').addEventListener('change', updateIncomeDisplay);
+    document.getElementById('other-income').addEventListener('input', updateIncomeDisplay);
     
     categories.forEach(cat => {
         const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
@@ -98,7 +87,6 @@ function loadData() {
     monthlyIncome = parseFloat(localStorage.getItem(`monthly-income-${currentYear}-${currentMonth}`) || '0');
     document.getElementById('monthly-income').value = monthlyIncome || '';
     
-    // Render income rows
     renderIncomeRows();
     updateIncomeDisplay();
 }
@@ -119,26 +107,23 @@ function loadBudgetInputs() {
     updateBudgetTotal();
 }
 
-// Income Functions
 function renderIncomeRows() {
-    // Render 1:1 Clients
     const oneToOneContainer = document.getElementById('one-to-one-list');
     oneToOneContainer.innerHTML = '';
     
     if (incomeData.oneToOne.length === 0) {
-        addOneToOneRow();
+        addOneToOneRow('', '');
     } else {
         incomeData.oneToOne.forEach(client => {
             addOneToOneRow(client.name, client.amount);
         });
     }
     
-    // Render Group Clients
     const groupContainer = document.getElementById('group-list');
     groupContainer.innerHTML = '';
     
     if (incomeData.group.length === 0) {
-        addGroupRow();
+        addGroupRow('', '');
     } else {
         incomeData.group.forEach(client => {
             addGroupRow(client.name, client.amount);
@@ -153,9 +138,21 @@ function addOneToOneRow(name = '', amount = '') {
     row.innerHTML = `
         <input type="text" placeholder="Client Name" class="one-to-one-name" value="${name}">
         <input type="number" placeholder="Amount" class="one-to-one-amount currency-input" min="0" step="0.01" value="${amount}">
-        <button type="button" class="delete-client-btn" onclick="removeRow(this)">Delete</button>
+        <button type="button" class="delete-client-btn">Delete</button>
     `;
-    row.querySelectorAll('input').forEach(inp => inp.addEventListener('change', updateIncomeDisplay));
+    
+    const deleteBtn = row.querySelector('.delete-client-btn');
+    deleteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        row.remove();
+        updateIncomeDisplay();
+    });
+    
+    row.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('change', updateIncomeDisplay);
+        inp.addEventListener('input', updateIncomeDisplay);
+    });
+    
     container.appendChild(row);
 }
 
@@ -166,19 +163,25 @@ function addGroupRow(name = '', amount = '') {
     row.innerHTML = `
         <input type="text" placeholder="Client Name" class="group-name" value="${name}">
         <input type="number" placeholder="Amount" class="group-amount currency-input" min="0" step="0.01" value="${amount}">
-        <button type="button" class="delete-client-btn" onclick="removeRow(this)">Delete</button>
+        <button type="button" class="delete-client-btn">Delete</button>
     `;
-    row.querySelectorAll('input').forEach(inp => inp.addEventListener('change', updateIncomeDisplay));
+    
+    const deleteBtn = row.querySelector('.delete-client-btn');
+    deleteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        row.remove();
+        updateIncomeDisplay();
+    });
+    
+    row.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('change', updateIncomeDisplay);
+        inp.addEventListener('input', updateIncomeDisplay);
+    });
+    
     container.appendChild(row);
 }
 
-function removeRow(btn) {
-    btn.closest('.client-row').remove();
-    updateIncomeDisplay();
-}
-
 function updateIncomeDisplay() {
-    // 1:1 Clients
     const oneToOneInputs = document.querySelectorAll('#one-to-one-list .client-row');
     incomeData.oneToOne = Array.from(oneToOneInputs).map(row => ({
         name: row.querySelector('.one-to-one-name').value,
@@ -187,7 +190,6 @@ function updateIncomeDisplay() {
     const oneToOneTotal = incomeData.oneToOne.reduce((sum, item) => sum + item.amount, 0);
     document.getElementById('one-to-one-total').textContent = formatCurrency(oneToOneTotal);
     
-    // Group Clients
     const groupInputs = document.querySelectorAll('#group-list .client-row');
     incomeData.group = Array.from(groupInputs).map(row => ({
         name: row.querySelector('.group-name').value,
@@ -196,13 +198,11 @@ function updateIncomeDisplay() {
     const groupTotal = incomeData.group.reduce((sum, item) => sum + item.amount, 0);
     document.getElementById('group-total').textContent = formatCurrency(groupTotal);
     
-    // Investment & Other
     incomeData.investment = parseFloat(document.getElementById('investment-income').value) || 0;
     incomeData.other = parseFloat(document.getElementById('other-income').value) || 0;
     
-    // Grand Total
     const grandTotal = oneToOneTotal + groupTotal + incomeData.investment + incomeData.other;
-    document.getElementById('grand-total-income').innerHTML = `<span>ðŸ’° GRAND TOTAL INCOME</span><span>${formatCurrency(grandTotal)}</span>`;
+    document.getElementById('grand-total-income').textContent = formatCurrency(grandTotal);
     
     saveData();
     updateAllDisplays();
@@ -224,7 +224,7 @@ function updateBudgetTotal() {
     categories.forEach(cat => {
         const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
         const input = document.getElementById(id);
-        if (input?.value) total += parseFloat(input.value) || 0;
+        if (input && input.value) total += parseFloat(input.value) || 0;
     });
     document.getElementById('total-budget').textContent = formatCurrency(total);
 }
@@ -234,7 +234,7 @@ function saveBudget() {
     categories.forEach(cat => {
         const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
         const input = document.getElementById(id);
-        if (input?.value) budgets[cat] = parseFloat(input.value) || 0;
+        if (input && input.value) budgets[cat] = parseFloat(input.value) || 0;
     });
     if (Object.keys(budgets).length === 0) {
         showAlert('Please enter at least one budget', 'error');
@@ -247,7 +247,6 @@ function saveBudget() {
     showAlert('Budget saved!', 'success');
 }
 
-// Expenses
 function addExpense(e) {
     e.preventDefault();
     const date = document.getElementById('expense-date').value;
@@ -273,7 +272,6 @@ function clearForm() {
     document.getElementById('expense-date').valueAsDate = new Date();
 }
 
-// Display Functions
 function updateAllDisplays() {
     updateOverviewCards();
     updateExpensesList();
@@ -308,13 +306,13 @@ function updateOverviewCards() {
     document.getElementById('net-cashflow').textContent = formatCurrency(netCashflow);
     
     const status = document.getElementById('cashflow-status');
-    if (netCashflow > 0) status.textContent = 'âœ“ Positive';
-    else if (netCashflow < 0) status.textContent = 'âš  Negative';
-    else status.textContent = '= Break Even';
+    if (netCashflow > 0) status.textContent = 'Positive';
+    else if (netCashflow < 0) status.textContent = 'Negative';
+    else status.textContent = 'Break Even';
     
     if (totalBudget > 0) {
         const pct = Math.round((totalExpenses / totalBudget) * 100);
-        document.getElementById('budget-overview-percentage').textContent = `${pct}%`;
+        document.getElementById('budget-overview-percentage').textContent = pct + '%';
     }
 }
 
@@ -329,7 +327,7 @@ function updateExpensesList() {
     list.innerHTML = allExpenses.length ? allExpenses.map(exp => `
         <div class="expense-item">
             <div class="expense-details">
-                <div class="expense-category">${categoryEmojis[exp.category]} ${exp.category}</div>
+                <div class="expense-category">${exp.category}</div>
                 ${exp.description ? `<div class="expense-description">${exp.description}</div>` : ''}
                 <div class="expense-date">${new Date(exp.date).toLocaleDateString()}</div>
             </div>
@@ -365,22 +363,22 @@ function updateDashboard() {
     if (totalBudget === 0) {
         status.textContent = 'Not Set';
         pct.textContent = '0%';
-        icon.textContent = 'âˆ’';
+        icon.textContent = '';
         card.className = 'summary-card status-card';
     } else {
         const p = Math.round((totalExpenses / totalBudget) * 100);
-        pct.textContent = `${p}%`;
+        pct.textContent = p + '%';
         if (p > 100) {
             status.textContent = 'Over';
-            icon.textContent = 'âš ';
+            icon.textContent = '';
             card.className = 'summary-card status-card over-budget';
         } else if (p > 80) {
             status.textContent = 'Warning';
-            icon.textContent = '!';
+            icon.textContent = '';
             card.className = 'summary-card status-card';
         } else {
             status.textContent = 'On Track';
-            icon.textContent = 'âœ“';
+            icon.textContent = '';
             card.className = 'summary-card status-card on-track';
         }
     }
@@ -407,7 +405,7 @@ function updateCategoryBreakdown() {
         else if (pct > 80) { statusClass = 'warning'; statusText = 'Warning'; }
         
         return `<tr>
-            <td>${categoryEmojis[cat]} ${cat}</td>
+            <td>${cat}</td>
             <td>${formatCurrency(budget)}</td>
             <td>${formatCurrency(spent)}</td>
             <td>${formatCurrency(budget - spent)}</td>
@@ -435,7 +433,7 @@ function updateProgressBars() {
         
         return `<div class="progress-item">
             <div class="progress-header">
-                <span class="progress-label">${categoryEmojis[cat]} ${cat}</span>
+                <span class="progress-label">${cat}</span>
                 <span class="progress-value">${formatCurrency(spent)} / ${formatCurrency(budget)}</span>
             </div>
             <div class="progress-bar-container"><div class="progress-bar ${cls}" style="width: ${pct}%"></div></div>
@@ -452,7 +450,8 @@ function updatePieChart() {
     const ctx = document.getElementById('pie-chart').getContext('2d');
     const data = categories.map(c => (expenses[c] || []).reduce((s, e) => s + e.amount, 0)).filter(v => v > 0);
     const labels = categories.filter(c => (expenses[c] || []).reduce((s, e) => s + e.amount, 0) > 0);
-    const colors = labels.map(l => categoryColors[l]);
+    const colors = ['#ef4444', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6', '#6b7280', '#6366f1', '#10b981', '#06b6d4', '#14b8a6'];
+    const chartColors = labels.map(l => colors[categories.indexOf(l)]);
     
     if (pieChart) pieChart.destroy();
     if (data.length === 0) return;
@@ -460,8 +459,8 @@ function updatePieChart() {
     pieChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: labels.map(l => `${categoryEmojis[l]} ${l}`),
-            datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+            labels: labels,
+            datasets: [{ data, backgroundColor: chartColors, borderWidth: 2, borderColor: '#fff' }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
@@ -483,7 +482,7 @@ function updateBarChart() {
     barChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: categories.map(c => `${categoryEmojis[c]} ${c}`),
+            labels: categories,
             datasets: [
                 { label: 'Budget', data: budgetData, backgroundColor: 'rgba(99, 102, 241, 0.7)', borderColor: 'rgba(99, 102, 241, 1)', borderWidth: 2 },
                 { label: 'Spent', data: spentData, backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 2 }
@@ -500,7 +499,6 @@ function updateBarChart() {
     });
 }
 
-// Export & Clear
 function exportExpenses() {
     const all = [];
     Object.entries(expenses).forEach(([cat, items]) => {
@@ -548,7 +546,6 @@ function clearAllData() {
     }
 }
 
-// Utilities
 function formatCurrency(amount) {
     const symbol = currencies[selectedCurrency];
     return symbol + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
