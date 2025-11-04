@@ -4,36 +4,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sahil's Budget Expense Tracker</title>
+<title>Sahil Budget Tracker</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="app-container">
 <header class="app-header">
-<h1>Sahil's Budget Expense Tracker</h1>
-<p class="tagline">Professional Financial Dashboard</p>
-<p class="subtitle">Track, Analyze, Succeed</p>
+<h1>Sahil Budget Tracker</h1>
+<p class="tagline">Track Income and Expenses</p>
 </header>
 
 <section class="section selectors-section">
 <div class="selectors-content">
 <div class="selector-group">
-<label for="currency-select">Currency:</label>
+<label>Currency:</label>
 <select id="currency-select" class="form-control">
-<option value="USD">USD ($)</option>
-<option value="CAD">CAD (C$)</option>
+<option value="USD">USD</option>
+<option value="CAD">CAD</option>
 </select>
 </div>
 <div class="selector-group">
-<label for="year-select">Year:</label>
+<label>Year:</label>
 <select id="year-select" class="form-control">
 <option value="2025">2025</option>
 <option value="2026">2026</option>
 </select>
 </div>
 <div class="selector-group">
-<label for="month-select">Month:</label>
+<label>Month:</label>
 <select id="month-select" class="form-control">
 <option value="0">January</option>
 <option value="1">February</option>
@@ -54,16 +53,15 @@
 
 <section class="section income-overview">
 <div class="section-header">
-<h2>Income & Cash Flow Overview</h2>
-<p class="section-description">Set your monthly income and view your financial status</p>
+<h2>Income Overview</h2>
 </div>
 <div class="overview-grid">
 <div class="overview-card income-card">
 <div class="card-header">Monthly Income</div>
 <div class="currency-input-wrapper">
-<input type="number" id="monthly-income" class="currency-input" min="0" step="0.01" placeholder="Enter monthly income">
+<input type="number" id="monthly-income" class="currency-input" min="0" step="0.01">
 </div>
-<button class="btn btn-primary btn-sm" id="save-income-btn">Save Income</button>
+<button class="btn btn-primary btn-sm" id="save-income-btn">Save</button>
 <div class="income-display" id="income-display">$0.00</div>
 </div>
 <div class="overview-card expenses-card">
@@ -73,12 +71,6 @@
 <div class="overview-card cashflow-card">
 <div class="card-header">Net Cash Flow</div>
 <div class="card-value-large" id="net-cashflow">$0.00</div>
-<div class="cashflow-status" id="cashflow-status"></div>
-</div>
-<div class="overview-card budget-status-overview">
-<div class="card-header">Budget Status</div>
-<div class="card-value-large" id="budget-overview-percentage">0%</div>
-<div class="budget-status-text">of budget used</div>
 </div>
 </div>
 </section>
@@ -86,25 +78,24 @@
 <section class="section income-breakdown">
 <div class="section-header">
 <h2>Income Breakdown</h2>
-<p class="section-description">Manage your income sources in detail</p>
 </div>
 
 <div class="income-subsection">
 <h3>1:1 Clients</h3>
-<div id="one-to-one-list" class="client-list"></div>
-<button class="btn btn-add" id="add-one-to-one-btn" type="button">Add More</button>
+<div id="one-to-one-list"></div>
+<button class="btn btn-add" id="add-one-to-one-btn">Add Row</button>
 <div class="income-subtotal">
-<span>Total from 1:1 Clients:</span>
+<span>Total: </span>
 <span id="one-to-one-total">$0.00</span>
 </div>
 </div>
 
 <div class="income-subsection">
 <h3>Group Clients</h3>
-<div id="group-list" class="client-list"></div>
-<button class="btn btn-add" id="add-group-btn" type="button">Add More</button>
+<div id="group-list"></div>
+<button class="btn btn-add" id="add-group-btn">Add Row</button>
 <div class="income-subtotal">
-<span>Total from Group Clients:</span>
+<span>Total: </span>
 <span id="group-total">$0.00</span>
 </div>
 </div>
@@ -112,14 +103,14 @@
 <div class="income-subsection">
 <h3>Investment Income</h3>
 <div class="currency-input-wrapper">
-<input type="number" id="investment-income" class="currency-input" min="0" step="0.01" placeholder="Enter investment income">
+<input type="number" id="investment-income" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 
 <div class="income-subsection">
 <h3>Other Income</h3>
 <div class="currency-input-wrapper">
-<input type="number" id="other-income" class="currency-input" min="0" step="0.01" placeholder="Enter other income">
+<input type="number" id="other-income" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 
@@ -134,101 +125,99 @@
 <section class="section budget-setup">
 <div class="section-header">
 <h2>Budget Setup</h2>
-<p class="section-description">Set your monthly budget limits for each category</p>
 </div>
 <div class="budget-grid">
 <div class="budget-item">
-<label for="budget-food">Food</label>
+<label>Food</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-food" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-food" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-transportation">Transportation</label>
+<label>Transportation</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-transportation" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-transportation" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-entertainment">Entertainment</label>
+<label>Entertainment</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-entertainment" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-entertainment" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-shopping">Shopping</label>
+<label>Shopping</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-shopping" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-shopping" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-bills">Bills</label>
+<label>Bills</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-bills" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-bills" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-other">Other</label>
+<label>Other</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-other" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-other" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-business">Business Expenses</label>
+<label>Business Expenses</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-business" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-business" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-gym">Gym</label>
+<label>Gym</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-gym" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-gym" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-travel">Travel</label>
+<label>Travel</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-travel" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-travel" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 <div class="budget-item">
-<label for="budget-daycare">Shayna Day Care Fee</label>
+<label>Shayna Day Care</label>
 <div class="currency-input-wrapper">
-<input type="number" id="budget-daycare" class="currency-input" min="0" step="0.01" placeholder="Enter amount">
+<input type="number" id="budget-daycare" class="currency-input" min="0" step="0.01">
 </div>
 </div>
 </div>
 <div class="budget-total">
-<span>Total Monthly Budget:</span>
-<span class="total-amount" id="total-budget">$0.00</span>
+<span>Total Budget: </span>
+<span id="total-budget">$0.00</span>
 </div>
 <button class="btn btn-primary" id="save-budget-btn">Save Budget</button>
-<div class="success-message" id="budget-success-msg">Budget saved successfully!</div>
+<div class="success-message" id="budget-success-msg">Budget saved</div>
 </section>
 
 <section class="section expense-log">
 <div class="section-header">
 <h2>Expense Log</h2>
-<p class="section-description">Add your expenses here</p>
 </div>
 <form id="expense-form" class="expense-form">
 <div class="form-row">
 <div class="form-group">
-<label for="expense-date">Date</label>
+<label>Date</label>
 <input type="date" id="expense-date" class="form-control" required>
 </div>
 <div class="form-group">
-<label for="expense-amount">Amount</label>
+<label>Amount</label>
 <div class="currency-input-wrapper">
-<input type="number" id="expense-amount" class="currency-input" min="0.01" step="0.01" placeholder="Enter amount" required>
+<input type="number" id="expense-amount" class="currency-input" min="0.01" step="0.01" required>
 </div>
 </div>
 </div>
 <div class="form-row">
 <div class="form-group">
-<label for="expense-category">Category</label>
+<label>Category</label>
 <select id="expense-category" class="form-control" required>
-<option value="">Select category</option>
+<option value="">Select</option>
 <option value="Food">Food</option>
 <option value="Transportation">Transportation</option>
 <option value="Entertainment">Entertainment</option>
@@ -238,79 +227,66 @@
 <option value="Business Expenses">Business Expenses</option>
 <option value="Gym">Gym</option>
 <option value="Travel">Travel</option>
-<option value="Shayna Day Care Fee">Shayna Day Care Fee</option>
+<option value="Shayna Day Care">Shayna Day Care</option>
 </select>
 </div>
 <div class="form-group">
-<label for="expense-description">Description (Optional)</label>
-<input type="text" id="expense-description" class="form-control" placeholder="e.g., Grocery shopping">
+<label>Description</label>
+<input type="text" id="expense-description" class="form-control">
 </div>
 </div>
 <div class="form-actions">
 <button type="submit" class="btn btn-success">Add Expense</button>
-<button type="button" class="btn btn-secondary" id="clear-form-btn">Clear Form</button>
+<button type="button" class="btn btn-secondary" id="clear-form-btn">Clear</button>
 </div>
 </form>
 <div class="expense-actions">
-<button class="btn btn-export" id="export-expenses-btn">Export Expenses (CSV)</button>
-<button class="btn btn-danger-outline" id="clear-month-btn">Clear This Month</button>
+<button class="btn btn-export" id="export-expenses-btn">Export</button>
+<button class="btn btn-danger-outline" id="clear-month-btn">Clear Month</button>
 </div>
 <div class="recent-expenses">
 <h3>Recent Expenses</h3>
-<div id="expenses-list" class="expenses-list">
-<p class="empty-state">No expenses logged yet</p>
-</div>
+<div id="expenses-list"></div>
 </div>
 </section>
 
 <section class="section dashboard">
 <div class="section-header">
 <h2>Dashboard</h2>
-<p class="section-description">Your financial overview</p>
 </div>
-
 <div class="summary-cards">
-<div class="summary-card card-inflow">
-<div class="card-icon">Money In</div>
+<div class="summary-card">
+<div class="card-icon">In</div>
 <div class="card-content">
-<p class="card-label">Total Cash Inflow</p>
+<p class="card-label">Cash In</p>
 <p class="card-value" id="total-cash-inflow">$0.00</p>
 </div>
 </div>
-<div class="summary-card card-outflow">
-<div class="card-icon">Money Out</div>
+<div class="summary-card">
+<div class="card-icon">Out</div>
 <div class="card-content">
-<p class="card-label">Total Cash Outflow</p>
+<p class="card-label">Cash Out</p>
 <p class="card-value" id="total-cash-outflow">$0.00</p>
 </div>
 </div>
 <div class="summary-card">
 <div class="card-icon">Spent</div>
 <div class="card-content">
-<p class="card-label">Total Spent</p>
+<p class="card-label">Spent</p>
 <p class="card-value" id="total-spent">$0.00</p>
 </div>
 </div>
 <div class="summary-card">
-<div class="card-icon">Remaining</div>
+<div class="card-icon">Left</div>
 <div class="card-content">
-<p class="card-label">Remaining Budget</p>
+<p class="card-label">Remaining</p>
 <p class="card-value" id="remaining-budget">$0.00</p>
-</div>
-</div>
-<div class="summary-card status-card">
-<div class="card-icon" id="status-icon">OK</div>
-<div class="card-content">
-<p class="card-label">Budget Status</p>
-<p class="card-value" id="budget-status">Not Set</p>
-<p class="card-percentage" id="budget-percentage">0%</p>
 </div>
 </div>
 </div>
 
 <div class="category-breakdown">
 <h3>Category Breakdown</h3>
-<div class="table-wrapper">
 <table class="breakdown-table">
 <thead>
 <tr>
@@ -318,56 +294,37 @@
 <th>Budget</th>
 <th>Spent</th>
 <th>Remaining</th>
-<th>Status</th>
 </tr>
 </thead>
 <tbody id="breakdown-tbody">
-<tr>
-<td colspan="5" class="empty-state">Set your budget to see breakdown</td>
-</tr>
 </tbody>
 </table>
-</div>
-</div>
-
-<div class="progress-section">
-<h3>Category Progress</h3>
-<div id="progress-bars" class="progress-bars">
-<p class="empty-state">Set your budget to see progress</p>
-</div>
 </div>
 </section>
 
 <section class="section charts">
 <div class="section-header">
-<h2>Visualizations</h2>
-<p class="section-description">Visual breakdown of your spending</p>
+<h2>Charts</h2>
 </div>
 <div class="charts-grid">
 <div class="chart-container">
-<h3>Expense Distribution</h3>
-<div class="chart-wrapper">
+<h3>Expenses</h3>
 <canvas id="pie-chart"></canvas>
-</div>
 </div>
 <div class="chart-container">
 <h3>Budget vs Actual</h3>
-<div class="chart-wrapper">
 <canvas id="bar-chart"></canvas>
-</div>
 </div>
 </div>
 </section>
 
 <section class="section export-section">
 <div class="section-header">
-<h2>Export & Backup</h2>
-<p class="section-description">Download your financial data</p>
+<h2>Export</h2>
 </div>
 <div class="export-buttons">
-<button class="btn btn-export" id="export-report-btn">Export Monthly Report</button>
-<button class="btn btn-export" id="export-all-btn">Download Backup</button>
-<button class="btn btn-danger" id="clear-all-btn">Clear All Data</button>
+<button class="btn btn-export" id="export-report-btn">Export Report</button>
+<button class="btn btn-danger" id="clear-all-btn">Clear All</button>
 </div>
 </section>
 </div>
