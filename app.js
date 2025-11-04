@@ -1,26 +1,26 @@
-// Categories configuration
-const categories = ['Food', 'Transportation', 'Entertainment', 'Shopping', 'Bills', 'Business Expenses', 'Gym', 'Travel', 'Shayna Day Care Fee', 'Other'];
+// Categories
+const categories = ['Food', 'Transportation', 'Entertainment', 'Shopping', 'Bills', 'Other', 'Business Expenses', 'Gym', 'Travel', 'Shayna Day Care Fee'];
 
 const categoryEmojis = {
     'Food': 'ðŸ”', 'Transportation': 'ðŸš—', 'Entertainment': 'ðŸŽ¬', 'Shopping': 'ðŸ›ï¸', 'Bills': 'ðŸ’¡',
-    'Business Expenses': 'ðŸ’¼', 'Gym': 'ðŸ‹ï¸', 'Travel': 'âœˆï¸', 'Shayna Day Care Fee': 'ðŸŽ“', 'Other': 'ðŸ“¦'
+    'Other': 'ðŸ“¦', 'Business Expenses': 'ðŸ’¼', 'Gym': 'ðŸ‹ï¸', 'Travel': 'âœˆï¸', 'Shayna Day Care Fee': 'ðŸŽ“'
 };
 
 const categoryColors = {
     'Food': '#ef4444', 'Transportation': '#f59e0b', 'Entertainment': '#8b5cf6', 'Shopping': '#ec4899', 'Bills': '#3b82f6',
-    'Business Expenses': '#6366f1', 'Gym': '#10b981', 'Travel': '#06b6d4', 'Shayna Day Care Fee': '#14b8a6', 'Other': '#6b7280'
+    'Other': '#6b7280', 'Business Expenses': '#6366f1', 'Gym': '#10b981', 'Travel': '#06b6d4', 'Shayna Day Care Fee': '#14b8a6'
 };
 
-const currencies = { 'USD': { symbol: '$', name: 'US Dollar' }, 'CAD': { symbol: 'C$', name: 'Canadian Dollar' } };
+const currencies = { 'USD': '$', 'CAD': 'C$' };
 
-// Global state
+// State
 let currentMonth = new Date().getMonth();
 let currentYear = 2025;
 let selectedCurrency = 'USD';
 let monthlyIncome = 0;
 let budgets = {};
 let expenses = {};
-let incomeData = {};
+let incomeData = { oneToOne: [], group: [], investment: 0, other: 0 };
 let pieChart = null;
 let barChart = null;
 
@@ -29,192 +29,201 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
     setupEventListeners();
     loadData();
-    updateUI();
+    updateAllDisplays();
 });
 
 function initializeApp() {
     document.getElementById('month-select').value = currentMonth;
     document.getElementById('year-select').value = currentYear;
     document.getElementById('currency-select').value = selectedCurrency;
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('expense-date').value = today;
+    document.getElementById('expense-date').valueAsDate = new Date();
 }
 
 function setupEventListeners() {
     document.getElementById('month-select').addEventListener('change', (e) => {
         currentMonth = parseInt(e.target.value);
         loadData();
-        updateUI();
+        updateAllDisplays();
     });
     
     document.getElementById('year-select').addEventListener('change', (e) => {
         currentYear = parseInt(e.target.value);
         loadData();
-        updateUI();
+        updateAllDisplays();
     });
     
     document.getElementById('currency-select').addEventListener('change', (e) => {
         selectedCurrency = e.target.value;
-        localStorage.setItem('selected-currency', selectedCurrency);
-        updateUI();
+        localStorage.setItem('currency', selectedCurrency);
+        updateAllDisplays();
     });
     
-    document.getElementById('save-income-btn').addEventListener('click', saveIncome);
+    document.getElementById('save-income-btn').addEventListener('click', saveMonthlyIncome);
     document.getElementById('save-budget-btn').addEventListener('click', saveBudget);
-    
-    categories.forEach(category => {
-        const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')}`;
-        const input = document.getElementById(inputId);
-        if (input) input.addEventListener('input', calculateBudgetTotal);
-    });
-    
-    document.getElementById('investment-income').addEventListener('change', () => updateIncomeDisplay());
-    document.getElementById('other-income').addEventListener('change', () => updateIncomeDisplay());
-    
     document.getElementById('expense-form').addEventListener('submit', addExpense);
-    document.getElementById('clear-form-btn').addEventListener('click', clearExpenseForm);
-    document.getElementById('export-expenses-btn').addEventListener('click', exportExpensesCSV);
-    document.getElementById('export-report-btn').addEventListener('click', exportMonthlyReport);
-    document.getElementById('export-all-btn').addEventListener('click', exportAllData);
-    document.getElementById('clear-month-btn').addEventListener('click', clearMonthData);
-    document.getElementById('clear-all-btn').addEventListener('click', clearAllData);
+    document.getElementById('clear-form-btn').addEventListener('click', clearForm);
+    document.getElementById('export-expenses-btn').addEventListener('click', () => exportExpenses());
+    document.getElementById('export-report-btn').addEventListener('click', () => exportReport());
+    document.getElementById('export-all-btn').addEventListener('click', () => exportAll());
+    document.getElementById('clear-month-btn').addEventListener('click', () => clearMonth());
+    document.getElementById('clear-all-btn').addEventListener('click', () => clearAllData());
+    
+    document.getElementById('add-one-to-one-btn').addEventListener('click', addOneToOneRow);
+    document.getElementById('add-group-btn').addEventListener('click', addGroupRow);
+    
+    document.getElementById('investment-income').addEventListener('change', updateIncomeDisplay);
+    document.getElementById('other-income').addEventListener('change', updateIncomeDisplay);
+    
+    categories.forEach(cat => {
+        const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+        const input = document.getElementById(id);
+        if (input) input.addEventListener('input', updateBudgetTotal);
+    });
 }
 
 function loadData() {
-    const saved = localStorage.getItem('selected-currency');
-    if (saved) selectedCurrency = saved;
+    const currency = localStorage.getItem('currency');
+    if (currency) selectedCurrency = currency;
     
     const budgetKey = `budget-${currentYear}-${currentMonth}`;
-    const savedBudget = localStorage.getItem(budgetKey);
-    budgets = savedBudget ? JSON.parse(savedBudget) : {};
-    if (Object.keys(budgets).length > 0) loadBudgetInputs();
+    budgets = JSON.parse(localStorage.getItem(budgetKey) || '{}');
+    loadBudgetInputs();
     
-    const expenseKey = `expenses-${currentYear}-${currentMonth}`;
+    const expenseKey = `expense-${currentYear}-${currentMonth}`;
     expenses = JSON.parse(localStorage.getItem(expenseKey) || '{}');
     
     const incomeKey = `income-${currentYear}-${currentMonth}`;
-    const savedIncome = localStorage.getItem(incomeKey);
-    incomeData = savedIncome ? JSON.parse(savedIncome) : { '1v1': [], 'group': [], 'investment': 0, 'other': 0 };
+    incomeData = JSON.parse(localStorage.getItem(incomeKey) || '{"oneToOne":[],"group":[],"investment":0,"other":0}');
     
-    const incomeSaved = localStorage.getItem(`monthly-income-${currentYear}-${currentMonth}`);
-    monthlyIncome = incomeSaved ? parseFloat(incomeSaved) : 0;
+    monthlyIncome = parseFloat(localStorage.getItem(`monthly-income-${currentYear}-${currentMonth}`) || '0');
+    document.getElementById('monthly-income').value = monthlyIncome || '';
     
-    loadIncomeData();
+    // Render income rows
+    renderIncomeRows();
+    updateIncomeDisplay();
 }
 
 function saveData() {
     localStorage.setItem(`budget-${currentYear}-${currentMonth}`, JSON.stringify(budgets));
-    localStorage.setItem(`expenses-${currentYear}-${currentMonth}`, JSON.stringify(expenses));
+    localStorage.setItem(`expense-${currentYear}-${currentMonth}`, JSON.stringify(expenses));
     localStorage.setItem(`income-${currentYear}-${currentMonth}`, JSON.stringify(incomeData));
     localStorage.setItem(`monthly-income-${currentYear}-${currentMonth}`, monthlyIncome);
-    localStorage.setItem('selected-currency', selectedCurrency);
 }
 
 function loadBudgetInputs() {
-    categories.forEach(category => {
-        const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')}`;
-        const input = document.getElementById(inputId);
-        if (input && budgets[category]) input.value = budgets[category];
+    categories.forEach(cat => {
+        const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+        const input = document.getElementById(id);
+        if (input && budgets[cat]) input.value = budgets[cat];
     });
-    calculateBudgetTotal();
+    updateBudgetTotal();
 }
 
-function loadIncomeData() {
-    const slots1v1 = document.getElementById('1v1-clients-slots');
-    slots1v1.innerHTML = '';
-    if (incomeData['1v1']?.length > 0) {
-        incomeData['1v1'].forEach(client => addIncomeSlot('1v1', client.name, client.amount));
+// Income Functions
+function renderIncomeRows() {
+    // Render 1:1 Clients
+    const oneToOneContainer = document.getElementById('one-to-one-list');
+    oneToOneContainer.innerHTML = '';
+    
+    if (incomeData.oneToOne.length === 0) {
+        addOneToOneRow();
     } else {
-        addIncomeSlot('1v1');
+        incomeData.oneToOne.forEach(client => {
+            addOneToOneRow(client.name, client.amount);
+        });
     }
     
-    const slotsGroup = document.getElementById('group-clients-slots');
-    slotsGroup.innerHTML = '';
-    if (incomeData['group']?.length > 0) {
-        incomeData['group'].forEach(client => addIncomeSlot('group', client.name, client.amount));
-    } else {
-        addIncomeSlot('group');
-    }
+    // Render Group Clients
+    const groupContainer = document.getElementById('group-list');
+    groupContainer.innerHTML = '';
     
-    document.getElementById('investment-income').value = incomeData['investment'] || 0;
-    document.getElementById('other-income').value = incomeData['other'] || 0;
-    updateIncomeDisplay();
+    if (incomeData.group.length === 0) {
+        addGroupRow();
+    } else {
+        incomeData.group.forEach(client => {
+            addGroupRow(client.name, client.amount);
+        });
+    }
 }
 
-// Income management
-function addIncomeSlot(type, name = '', amount = '') {
-    const containerId = type === '1v1' ? '1v1-clients-slots' : 'group-clients-slots';
-    const slot = document.createElement('div');
-    slot.className = 'income-slot';
-    slot.innerHTML = `
-        <input type="text" placeholder="Client Name" class="income-client-name" value="${name}">
-        <div class="currency-input-wrapper"><input type="number" placeholder="Amount" class="income-amount currency-input" min="0" step="0.01" value="${amount}"></div>
-        <button class="btn btn-sm btn-danger-outline delete-income-btn" onclick="deleteIncomeSlot(this, '${type}')">Delete</button>
+function addOneToOneRow(name = '', amount = '') {
+    const container = document.getElementById('one-to-one-list');
+    const row = document.createElement('div');
+    row.className = 'client-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Client Name" class="one-to-one-name" value="${name}">
+        <input type="number" placeholder="Amount" class="one-to-one-amount currency-input" min="0" step="0.01" value="${amount}">
+        <button type="button" class="delete-client-btn" onclick="removeRow(this)">Delete</button>
     `;
-    
-    const inputs = slot.querySelectorAll('input');
-    inputs.forEach(input => {
-        input.addEventListener('input', updateIncomeDisplay);
-        input.addEventListener('change', saveIncomeData);
-    });
-    
-    document.getElementById(containerId).appendChild(slot);
+    row.querySelectorAll('input').forEach(inp => inp.addEventListener('change', updateIncomeDisplay));
+    container.appendChild(row);
 }
 
-function deleteIncomeSlot(button, type) {
-    button.closest('.income-slot').remove();
+function addGroupRow(name = '', amount = '') {
+    const container = document.getElementById('group-list');
+    const row = document.createElement('div');
+    row.className = 'client-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Client Name" class="group-name" value="${name}">
+        <input type="number" placeholder="Amount" class="group-amount currency-input" min="0" step="0.01" value="${amount}">
+        <button type="button" class="delete-client-btn" onclick="removeRow(this)">Delete</button>
+    `;
+    row.querySelectorAll('input').forEach(inp => inp.addEventListener('change', updateIncomeDisplay));
+    container.appendChild(row);
+}
+
+function removeRow(btn) {
+    btn.closest('.client-row').remove();
     updateIncomeDisplay();
-}
-
-function saveIncomeData() {
-    const slots1v1 = document.querySelectorAll('#1v1-clients-slots .income-slot');
-    incomeData['1v1'] = Array.from(slots1v1).map(slot => ({
-        name: slot.querySelector('.income-client-name').value,
-        amount: parseFloat(slot.querySelector('.income-amount').value) || 0
-    }));
-    
-    const slotsGroup = document.querySelectorAll('#group-clients-slots .income-slot');
-    incomeData['group'] = Array.from(slotsGroup).map(slot => ({
-        name: slot.querySelector('.income-client-name').value,
-        amount: parseFloat(slot.querySelector('.income-amount').value) || 0
-    }));
-    
-    incomeData['investment'] = parseFloat(document.getElementById('investment-income').value) || 0;
-    incomeData['other'] = parseFloat(document.getElementById('other-income').value) || 0;
-    saveData();
 }
 
 function updateIncomeDisplay() {
-    saveIncomeData();
-    document.getElementById('total-1v1').textContent = formatCurrency(incomeData['1v1'].reduce((s, c) => s + c.amount, 0));
-    document.getElementById('total-group').textContent = formatCurrency(incomeData['group'].reduce((s, c) => s + c.amount, 0));
-    document.getElementById('total-investment').textContent = formatCurrency(incomeData['investment']);
-    document.getElementById('total-other').textContent = formatCurrency(incomeData['other']);
+    // 1:1 Clients
+    const oneToOneInputs = document.querySelectorAll('#one-to-one-list .client-row');
+    incomeData.oneToOne = Array.from(oneToOneInputs).map(row => ({
+        name: row.querySelector('.one-to-one-name').value,
+        amount: parseFloat(row.querySelector('.one-to-one-amount').value) || 0
+    }));
+    const oneToOneTotal = incomeData.oneToOne.reduce((sum, item) => sum + item.amount, 0);
+    document.getElementById('one-to-one-total').textContent = formatCurrency(oneToOneTotal);
     
-    const grandTotal = incomeData['1v1'].reduce((s, c) => s + c.amount, 0) + incomeData['group'].reduce((s, c) => s + c.amount, 0) + incomeData['investment'] + incomeData['other'];
-    document.getElementById('grand-total-income').textContent = `Total Monthly Income: ${formatCurrency(grandTotal)}`;
-    updateUI();
+    // Group Clients
+    const groupInputs = document.querySelectorAll('#group-list .client-row');
+    incomeData.group = Array.from(groupInputs).map(row => ({
+        name: row.querySelector('.group-name').value,
+        amount: parseFloat(row.querySelector('.group-amount').value) || 0
+    }));
+    const groupTotal = incomeData.group.reduce((sum, item) => sum + item.amount, 0);
+    document.getElementById('group-total').textContent = formatCurrency(groupTotal);
+    
+    // Investment & Other
+    incomeData.investment = parseFloat(document.getElementById('investment-income').value) || 0;
+    incomeData.other = parseFloat(document.getElementById('other-income').value) || 0;
+    
+    // Grand Total
+    const grandTotal = oneToOneTotal + groupTotal + incomeData.investment + incomeData.other;
+    document.getElementById('grand-total-income').innerHTML = `<span>ðŸ’° GRAND TOTAL INCOME</span><span>${formatCurrency(grandTotal)}</span>`;
+    
+    saveData();
+    updateAllDisplays();
 }
 
-// Income (legacy)
-function saveIncome() {
-    const value = parseFloat(document.getElementById('monthly-income').value);
-    if (isNaN(value) || value < 0) {
-        showAlert('Please enter a valid income amount', 'error');
+function saveMonthlyIncome() {
+    monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
+    if (monthlyIncome < 0) {
+        showAlert('Please enter a valid amount', 'error');
         return;
     }
-    monthlyIncome = value;
     saveData();
-    updateUI();
-    showAlert('Income saved successfully!', 'success');
+    updateAllDisplays();
+    showAlert('Monthly income saved!', 'success');
 }
 
-// Budget
-function calculateBudgetTotal() {
+function updateBudgetTotal() {
     let total = 0;
-    categories.forEach(category => {
-        const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')}`;
-        const input = document.getElementById(inputId);
+    categories.forEach(cat => {
+        const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+        const input = document.getElementById(id);
         if (input?.value) total += parseFloat(input.value) || 0;
     });
     document.getElementById('total-budget').textContent = formatCurrency(total);
@@ -222,27 +231,20 @@ function calculateBudgetTotal() {
 
 function saveBudget() {
     budgets = {};
-    let hasValue = false;
-    categories.forEach(category => {
-        const inputId = `budget-${category.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')}`;
-        const input = document.getElementById(inputId);
-        if (input?.value) {
-            budgets[category] = parseFloat(input.value) || 0;
-            hasValue = true;
-        }
+    categories.forEach(cat => {
+        const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+        const input = document.getElementById(id);
+        if (input?.value) budgets[cat] = parseFloat(input.value) || 0;
     });
-    
-    if (!hasValue) {
-        showAlert('Please enter at least one budget amount', 'error');
+    if (Object.keys(budgets).length === 0) {
+        showAlert('Please enter at least one budget', 'error');
         return;
     }
-    
     saveData();
-    updateUI();
-    const msg = document.getElementById('budget-success-msg');
-    msg.classList.add('show');
-    setTimeout(() => msg.classList.remove('show'), 3000);
-    showAlert('Budget saved successfully!', 'success');
+    updateAllDisplays();
+    document.getElementById('budget-success-msg').classList.add('show');
+    setTimeout(() => document.getElementById('budget-success-msg').classList.remove('show'), 3000);
+    showAlert('Budget saved!', 'success');
 }
 
 // Expenses
@@ -254,45 +256,39 @@ function addExpense(e) {
     const description = document.getElementById('expense-description').value;
     
     if (!date || !amount || !category) {
-        showAlert('Please fill in all required fields', 'error');
+        showAlert('Please fill all required fields', 'error');
         return;
     }
     
     if (!expenses[category]) expenses[category] = [];
-    expenses[category].push({ id: Date.now(), date, amount, category, description });
+    expenses[category].push({ id: Date.now(), date, amount, description });
     saveData();
-    updateUI();
-    clearExpenseForm();
-    showAlert('Expense added successfully!', 'success');
+    updateAllDisplays();
+    clearForm();
+    showAlert('Expense added!', 'success');
 }
 
-function deleteExpense(category, expenseId) {
-    if (confirm('Delete this expense?')) {
-        expenses[category] = expenses[category].filter(exp => exp.id !== expenseId);
-        if (expenses[category].length === 0) delete expenses[category];
-        saveData();
-        updateUI();
-        showAlert('Expense deleted!', 'success');
-    }
-}
-
-function clearExpenseForm() {
+function clearForm() {
     document.getElementById('expense-form').reset();
-    document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('expense-date').valueAsDate = new Date();
 }
 
-// UI Updates
-function updateUI() {
-    updateOverview();
+// Display Functions
+function updateAllDisplays() {
+    updateOverviewCards();
     updateExpensesList();
     updateDashboard();
     updateCharts();
 }
 
 function getTotalIncome() {
-    return (incomeData['1v1']?.reduce((s, c) => s + c.amount, 0) || 0) + 
-           (incomeData['group']?.reduce((s, c) => s + c.amount, 0) || 0) + 
-           (incomeData['investment'] || 0) + (incomeData['other'] || 0) + monthlyIncome;
+    const oneToOne = document.querySelectorAll('#one-to-one-list .one-to-one-amount');
+    const group = document.querySelectorAll('#group-list .group-amount');
+    const oneToOneSum = Array.from(oneToOne).reduce((sum, inp) => sum + (parseFloat(inp.value) || 0), 0);
+    const groupSum = Array.from(group).reduce((sum, inp) => sum + (parseFloat(inp.value) || 0), 0);
+    const investment = parseFloat(document.getElementById('investment-income').value) || 0;
+    const other = parseFloat(document.getElementById('other-income').value) || 0;
+    return monthlyIncome + oneToOneSum + groupSum + investment + other;
 }
 
 function getTotalExpenses() {
@@ -301,39 +297,36 @@ function getTotalExpenses() {
     return total;
 }
 
-function updateOverview() {
+function updateOverviewCards() {
     const totalIncome = getTotalIncome();
     const totalExpenses = getTotalExpenses();
     const netCashflow = totalIncome - totalExpenses;
     const totalBudget = Object.values(budgets).reduce((s, v) => s + v, 0);
     
+    document.getElementById('income-display').textContent = formatCurrency(totalIncome);
     document.getElementById('overview-total-expenses').textContent = formatCurrency(totalExpenses);
     document.getElementById('net-cashflow').textContent = formatCurrency(netCashflow);
     
     const status = document.getElementById('cashflow-status');
     if (netCashflow > 0) status.textContent = 'âœ“ Positive';
     else if (netCashflow < 0) status.textContent = 'âš  Negative';
-    else status.textContent = 'âˆ’ Break even';
+    else status.textContent = '= Break Even';
     
     if (totalBudget > 0) {
         const pct = Math.round((totalExpenses / totalBudget) * 100);
         document.getElementById('budget-overview-percentage').textContent = `${pct}%`;
-        const card = document.getElementById('budget-overview-card');
-        card.style.background = pct > 100 ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 
-                                pct > 80 ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' : 
-                                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
     }
 }
 
 function updateExpensesList() {
     const list = document.getElementById('expenses-list');
-    const all = [];
-    Object.keys(expenses).forEach(cat => {
-        expenses[cat].forEach(exp => all.push({ ...exp, category: cat }));
+    const allExpenses = [];
+    Object.entries(expenses).forEach(([cat, items]) => {
+        items.forEach(item => allExpenses.push({ ...item, category: cat }));
     });
-    all.sort((a, b) => new Date(b.date) - new Date(a.date));
+    allExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    list.innerHTML = all.length ? all.map(exp => `
+    list.innerHTML = allExpenses.length ? allExpenses.map(exp => `
         <div class="expense-item">
             <div class="expense-details">
                 <div class="expense-category">${categoryEmojis[exp.category]} ${exp.category}</div>
@@ -346,14 +339,21 @@ function updateExpensesList() {
     `).join('') : '<p class="empty-state">No expenses yet!</p>';
 }
 
+function deleteExpense(cat, id) {
+    expenses[cat] = expenses[cat].filter(e => e.id !== id);
+    if (expenses[cat].length === 0) delete expenses[cat];
+    saveData();
+    updateAllDisplays();
+}
+
 function updateDashboard() {
     const totalIncome = getTotalIncome();
     const totalExpenses = getTotalExpenses();
     const totalBudget = Object.values(budgets).reduce((s, v) => s + v, 0);
     const remaining = totalBudget - totalExpenses;
     
-    document.getElementById('total-inflow').textContent = formatCurrency(totalIncome);
-    document.getElementById('total-outflow').textContent = formatCurrency(totalExpenses);
+    document.getElementById('total-cash-inflow').textContent = formatCurrency(totalIncome);
+    document.getElementById('total-cash-outflow').textContent = formatCurrency(totalExpenses);
     document.getElementById('total-spent').textContent = formatCurrency(totalExpenses);
     document.getElementById('remaining-budget').textContent = formatCurrency(remaining);
     
@@ -378,7 +378,6 @@ function updateDashboard() {
             status.textContent = 'Warning';
             icon.textContent = '!';
             card.className = 'summary-card status-card';
-            card.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
         } else {
             status.textContent = 'On Track';
             icon.textContent = 'âœ“';
@@ -492,7 +491,7 @@ function updateBarChart() {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, ticks: { callback: v => formatCurrencySymbol() + v.toLocaleString() } } },
+            scales: { y: { beginAtZero: true } },
             plugins: {
                 legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } },
                 tooltip: { callbacks: { label: c => c.dataset.label + ': ' + formatCurrency(c.parsed.y) } }
@@ -501,78 +500,61 @@ function updateBarChart() {
     });
 }
 
-// Export
-function exportExpensesCSV() {
+// Export & Clear
+function exportExpenses() {
     const all = [];
-    Object.keys(expenses).forEach(cat => expenses[cat].forEach(exp => all.push({ Date: exp.date, Category: cat, Amount: exp.amount, Description: exp.description || '', Currency: selectedCurrency })));
-    if (all.length === 0) {
-        showAlert('No expenses to export', 'warning');
-        return;
-    }
-    downloadCSV(convertToCSV(all), `expenses_${currentYear}_${currentMonth}.csv`);
-    showAlert('Exported!', 'success');
-}
-
-function exportMonthlyReport() {
-    const data = categories.map(cat => {
-        const budget = budgets[cat] || 0;
-        const spent = (expenses[cat] || []).reduce((s, e) => s + e.amount, 0);
-        return { Category: cat, Budget: budget, Spent: spent, Remaining: budget - spent, Status: spent > budget ? 'Over' : 'OK', Currency: selectedCurrency };
+    Object.entries(expenses).forEach(([cat, items]) => {
+        items.forEach(item => all.push({ Date: item.date, Category: cat, Amount: item.amount, Description: item.description || '' }));
     });
-    downloadCSV(convertToCSV(data), `report_${currentYear}_${currentMonth}.csv`);
-    showAlert('Report exported!', 'success');
+    if (all.length === 0) { showAlert('No expenses to export', 'warning'); return; }
+    downloadCSV(convertToCSV(all), `expenses_${currentYear}_${currentMonth}.csv`);
 }
 
-function exportAllData() {
-    const data = { income: incomeData, budgets: {}, expenses: {}, currency: selectedCurrency };
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('budget-')) data.budgets[key] = JSON.parse(localStorage.getItem(key));
-        if (key.startsWith('expenses-')) data.expenses[key] = JSON.parse(localStorage.getItem(key));
-    }
+function exportReport() {
+    const data = categories.map(cat => ({
+        Category: cat,
+        Budget: budgets[cat] || 0,
+        Spent: (expenses[cat] || []).reduce((s, e) => s + e.amount, 0),
+        Remaining: (budgets[cat] || 0) - ((expenses[cat] || []).reduce((s, e) => s + e.amount, 0))
+    }));
+    downloadCSV(convertToCSV(data), `report_${currentYear}_${currentMonth}.csv`);
+}
+
+function exportAll() {
+    const data = { income: incomeData, budgets, expenses, currency: selectedCurrency };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
+    a.href = url;
     a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
-    showAlert('Backup downloaded!', 'success');
 }
 
-// Clear
-function clearMonthData() {
-    if (confirm('Clear month data?')) {
+function clearMonth() {
+    if (confirm('Clear this month data?')) {
         expenses = {};
         saveData();
-        updateUI();
+        updateAllDisplays();
         showAlert('Month cleared!', 'success');
     }
 }
 
 function clearAllData() {
-    if (confirm('Clear ALL data?') && confirm('Are you absolutely sure?')) {
+    if (confirm('Clear ALL data?') && confirm('Are you sure?')) {
         localStorage.clear();
         expenses = budgets = incomeData = {};
         monthlyIncome = 0;
-        categories.forEach(cat => {
-            const id = `budget-${cat.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')}`;
-            const inp = document.getElementById(id);
-            if (inp) inp.value = '';
-        });
-        updateUI();
-        showAlert('All data cleared!', 'success');
+        location.reload();
     }
 }
 
 // Utilities
-function formatCurrencySymbol() {
-    return currencies[selectedCurrency].symbol;
-}
-
 function formatCurrency(amount) {
-    return formatCurrencySymbol() + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    const symbol = currencies[selectedCurrency];
+    return symbol + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
 
-function showAlert(msg, type = 'info') {
+function showAlert(msg, type) {
     const cont = document.getElementById('alerts-container');
     const alert = document.createElement('div');
     alert.className = `alert alert-${type}`;
@@ -582,7 +564,7 @@ function showAlert(msg, type = 'info') {
 }
 
 function convertToCSV(data) {
-    if (data.length === 0) return '';
+    if (!data.length) return '';
     const headers = Object.keys(data[0]);
     const rows = [headers.join(',')];
     data.forEach(row => {
@@ -594,8 +576,9 @@ function convertToCSV(data) {
 
 function downloadCSV(csv, filename) {
     const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
+    a.href = url;
     a.download = filename;
     a.click();
 }
