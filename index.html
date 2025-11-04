@@ -4,37 +4,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sahil's Budget & Expense Tracker</title>
+<title>Sahil's Budget Expense Tracker</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="app-container">
 <header class="app-header">
-<h1>💎 Sahil's Budget & Expense Tracker</h1>
-<p class="tagline">Professional Financial Dashboard | Track, Analyze, Succeed</p>
-<p class="subtitle">Track income, expenses, and manage your budget with ease</p>
+<h1>Sahil's Budget Expense Tracker</h1>
+<p class="tagline">Professional Financial Dashboard</p>
+<p class="subtitle">Track, Analyze, Succeed</p>
 </header>
 
 <section class="section selectors-section">
 <div class="selectors-content">
 <div class="selector-group">
 <label for="currency-select">Currency:</label>
-<select id="currency-select" class="form-control selector-dropdown">
+<select id="currency-select" class="form-control">
 <option value="USD">USD ($)</option>
 <option value="CAD">CAD (C$)</option>
 </select>
 </div>
 <div class="selector-group">
 <label for="year-select">Year:</label>
-<select id="year-select" class="form-control selector-dropdown">
+<select id="year-select" class="form-control">
 <option value="2025">2025</option>
 <option value="2026">2026</option>
 </select>
 </div>
 <div class="selector-group">
 <label for="month-select">Month:</label>
-<select id="month-select" class="form-control month-select-dropdown">
+<select id="month-select" class="form-control">
 <option value="0">January</option>
 <option value="1">February</option>
 <option value="2">March</option>
@@ -70,15 +70,15 @@
 <div class="card-header">Total Expenses</div>
 <div class="card-value-large" id="overview-total-expenses">$0.00</div>
 </div>
-<div class="overview-card cashflow-card" id="cashflow-card">
+<div class="overview-card cashflow-card">
 <div class="card-header">Net Cash Flow</div>
 <div class="card-value-large" id="net-cashflow">$0.00</div>
 <div class="cashflow-status" id="cashflow-status"></div>
 </div>
-<div class="overview-card budget-status-overview" id="budget-overview-card">
+<div class="overview-card budget-status-overview">
 <div class="card-header">Budget Status</div>
 <div class="card-value-large" id="budget-overview-percentage">0%</div>
-<div class="budget-status-text" id="budget-overview-text">of budget used</div>
+<div class="budget-status-text">of budget used</div>
 </div>
 </div>
 </section>
@@ -92,7 +92,7 @@
 <div class="income-subsection">
 <h3>1:1 Clients</h3>
 <div id="one-to-one-list" class="client-list"></div>
-<button class="btn btn-add" id="add-one-to-one-btn" type="button">+ Add More</button>
+<button class="btn btn-add" id="add-one-to-one-btn" type="button">Add More</button>
 <div class="income-subtotal">
 <span>Total from 1:1 Clients:</span>
 <span id="one-to-one-total">$0.00</span>
@@ -102,7 +102,7 @@
 <div class="income-subsection">
 <h3>Group Clients</h3>
 <div id="group-list" class="client-list"></div>
-<button class="btn btn-add" id="add-group-btn" type="button">+ Add More</button>
+<button class="btn btn-add" id="add-group-btn" type="button">Add More</button>
 <div class="income-subtotal">
 <span>Total from Group Clients:</span>
 <span id="group-total">$0.00</span>
@@ -219,8 +219,8 @@
 </div>
 <div class="form-group">
 <label for="expense-amount">Amount</label>
-<div class="currency-input-wrapper-expense">
-<input type="number" id="expense-amount" class="expense-amount-input" min="0.01" step="0.01" placeholder="Enter amount" required>
+<div class="currency-input-wrapper">
+<input type="number" id="expense-amount" class="currency-input" min="0.01" step="0.01" placeholder="Enter amount" required>
 </div>
 </div>
 </div>
@@ -258,7 +258,7 @@
 <div class="recent-expenses">
 <h3>Recent Expenses</h3>
 <div id="expenses-list" class="expenses-list">
-<p class="empty-state">No expenses logged yet. Add your first expense above!</p>
+<p class="empty-state">No expenses logged yet</p>
 </div>
 </div>
 </section>
@@ -271,35 +271,35 @@
 
 <div class="summary-cards">
 <div class="summary-card card-inflow">
-<div class="card-icon">💰</div>
+<div class="card-icon">Money In</div>
 <div class="card-content">
 <p class="card-label">Total Cash Inflow</p>
 <p class="card-value" id="total-cash-inflow">$0.00</p>
 </div>
 </div>
 <div class="summary-card card-outflow">
-<div class="card-icon">💸</div>
+<div class="card-icon">Money Out</div>
 <div class="card-content">
 <p class="card-label">Total Cash Outflow</p>
 <p class="card-value" id="total-cash-outflow">$0.00</p>
 </div>
 </div>
 <div class="summary-card">
-<div class="card-icon">💵</div>
+<div class="card-icon">Spent</div>
 <div class="card-content">
 <p class="card-label">Total Spent</p>
 <p class="card-value" id="total-spent">$0.00</p>
 </div>
 </div>
 <div class="summary-card">
-<div class="card-icon">💰</div>
+<div class="card-icon">Remaining</div>
 <div class="card-content">
 <p class="card-label">Remaining Budget</p>
 <p class="card-value" id="remaining-budget">$0.00</p>
 </div>
 </div>
-<div class="summary-card status-card" id="budget-status-card">
-<div class="card-icon" id="status-icon">✓</div>
+<div class="summary-card status-card">
+<div class="card-icon" id="status-icon">OK</div>
 <div class="card-content">
 <p class="card-label">Budget Status</p>
 <p class="card-value" id="budget-status">Not Set</p>
@@ -349,14 +349,12 @@
 <div class="chart-wrapper">
 <canvas id="pie-chart"></canvas>
 </div>
-<p class="chart-caption">How your expenses are distributed across categories</p>
 </div>
 <div class="chart-container">
 <h3>Budget vs Actual</h3>
 <div class="chart-wrapper">
 <canvas id="bar-chart"></canvas>
 </div>
-<p class="chart-caption">Comparison of budgeted vs actual spending</p>
 </div>
 </div>
 </section>
@@ -367,8 +365,8 @@
 <p class="section-description">Download your financial data</p>
 </div>
 <div class="export-buttons">
-<button class="btn btn-export" id="export-report-btn">Export Monthly Report (CSV)</button>
-<button class="btn btn-export" id="export-all-btn">Download Complete Backup (JSON)</button>
+<button class="btn btn-export" id="export-report-btn">Export Monthly Report</button>
+<button class="btn btn-export" id="export-all-btn">Download Backup</button>
 <button class="btn btn-danger" id="clear-all-btn">Clear All Data</button>
 </div>
 </section>
